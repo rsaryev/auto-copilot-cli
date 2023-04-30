@@ -1,0 +1,6 @@
+/.idea/
+/dist/
+/node_modules/
+/.env
+/auto-copilot-cli.iml
+./config.json

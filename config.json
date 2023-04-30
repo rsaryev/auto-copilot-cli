@@ -1,0 +1,5 @@
+{
+  "MAX_TOKENS": 400,
+  "TEMPERATURE": 0.7,
+  "OPENAI_API_KEY": "sk-xxx"
+}
