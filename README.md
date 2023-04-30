@@ -1,5 +1,7 @@
 # Auto Copilot CLI
 
+[![npm](https://img.shields.io/npm/v/auto-copilot-cli)](https://www.npmjs.com/package/auto-copilot-cli)
+
 ### Quick Start
 
 1. Install the CLI tool globally using npm ```npm i -g auto-copilot-cli```
