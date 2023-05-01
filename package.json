@@ -1,10 +1,12 @@
 {
   "name": "auto-copilot-cli",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "main": "index.js",
   "description": "This CLI tool uses the ChatGPT language model to create commands. This allows you to create a list of tasks and perform them sequentially, optimizing your workflow and increasing the efficiency of repetitive actions..",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix"
   },
   "bin": {
     "auto-copilot-cli": "cli.js"
@@ -22,6 +24,10 @@
     "@types/cli-table": "^0.3.1",
     "@types/inquirer": "^9.0.3",
     "@types/node": "^18.16.3",
+    "@typescript-eslint/eslint-plugin": "^5.59.2",
+    "@typescript-eslint/parser": "^5.59.2",
+    "eslint": "^8.39.0",
+    "eslint-plugin-import": "^2.27.5",
     "prettier": "^2.8.8",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
@@ -29,16 +35,21 @@
   "dependencies": {
     "chalk": "^4.1.2",
     "cli-table": "^0.3.11",
-    "openai": "^3.2.1"
+    "openai": "^3.2.1",
+    "winston": "^3.8.2"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/rsaryev/auto-copilot-cli.git"
+    "url": "git+https://github.com/rsaryev/auto-copilot-cli.git"
   },
   "keywords": [
     "copilot",
     "cli",
     "chatgpt",
     "openai"
-  ]
+  ],
+  "bugs": {
+    "url": "https://github.com/rsaryev/auto-copilot-cli/issues"
+  },
+  "homepage": "https://github.com/rsaryev/auto-copilot-cli#readme"
 }

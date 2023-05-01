@@ -13,8 +13,6 @@
 
 This CLI tool uses the ChatGPT language model to create commands. This allows you to create a list of tasks and perform them sequentially, optimizing your workflow and increasing the efficiency of repetitive actions.
 
-## Demo
+## Example
 
-![auto-copilot-cli](demo/auto-copilot-cli-1.gif)
-
-![auto-copilot-cli](demo/auto-copilot-cli.gif)
+![auto-copilot-cli](demo/1.gif)
