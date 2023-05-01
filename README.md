@@ -15,4 +15,6 @@ This CLI tool uses the ChatGPT language model to create commands. This allows yo
 
 ## Demo
 
-![auto-copilot-cli](auto-copilot-cli.gif)
+![auto-copilot-cli](demo/auto-copilot-cli-1.gif)
+
+![auto-copilot-cli](demo/auto-copilot-cli.gif)

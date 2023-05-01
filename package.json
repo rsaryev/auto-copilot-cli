@@ -1,6 +1,6 @@
 {
   "name": "auto-copilot-cli",
-  "version": "1.0.2",
+  "version": "1.0.5",
   "main": "index.js",
   "description": "This CLI tool uses the ChatGPT language model to create commands. This allows you to create a list of tasks and perform them sequentially, optimizing your workflow and increasing the efficiency of repetitive actions..",
   "scripts": {
@@ -13,7 +13,8 @@
     "dist",
     "cli.js",
     "README.md",
-    "config.json"
+    "config.json",
+    "demo"
   ],
   "author": "Rustam Saryev",
   "license": "ISC",

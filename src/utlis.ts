@@ -7,10 +7,8 @@ import { stdin as input, stdout as output } from 'process';
 const runCommand = async (command: string) => {
   try {
     const { stdout, stderr } = await promisify(exec)(command);
-    console.log(chalk.yellow(`Command: ${command} executed successfully!`));
     return { result: stdout, error: stderr };
   } catch (e: any) {
-    console.error(chalk.red(`Command: ${command} failed!`));
     return { result: '', error: e.stderr };
   }
 };

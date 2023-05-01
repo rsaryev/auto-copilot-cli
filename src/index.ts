@@ -50,11 +50,12 @@ async function executeCommand(continueCLI: boolean): Promise<void> {
     return;
   }
 
+  const commandSmall = command.trim().replace(/\n/g, '').substring(0, 30);
   if (!continueCLI) {
     const confirmation = await rl.question(
       chalk.yellow(
         `Do you want to execute the following command: ${colorCommand(
-          command,
+          commandSmall,
         )} (y/n)? `,
       ),
     );
@@ -68,11 +69,16 @@ async function executeCommand(continueCLI: boolean): Promise<void> {
 
   const { result, error } = await runCommand(command);
   if (error) {
+    console.error(
+      chalk.red(
+        `Command: ${colorCommand(commandSmall)} failed with error: ${error}`,
+      ),
+    );
     throw error;
   }
 
   console.log(
-    `Command: ${colorCommand(command)} executed with result: ${result}`,
+    `Command: ${colorCommand(commandSmall)} executed with result: ${result}`,
   );
   commandQueue.shift();
 }
@@ -95,11 +101,22 @@ async function startAI(config: IConfig, goal: string): Promise<void> {
       const table = new Table({
         head: ['#', 'Command'],
         rows: commands.map((task, index) => [index.toString(), task]),
+        colWidths: [5, 100],
       });
 
       console.log(table.toString() + '\n');
     }
 
+    const regenerateResponse =
+      (await rl.question(
+        chalk.yellow('Do you want to regenerate commands (y/n)? '),
+      )) === 'y';
+
+    if (regenerateResponse) {
+      commandQueue.length = 0;
+      await startAI(config, goal);
+      return;
+    }
     const continueCLI =
       (await rl.question(
         chalk.yellow('Do you want to automate the following commands (y/n)? '),
