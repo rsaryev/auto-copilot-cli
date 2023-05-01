@@ -144,7 +144,9 @@ async function startAI(config: IConfig, goal: string): Promise<void> {
 
 async function main() {
   const config = await getConfig();
-  const goal = await rl.question(chalk.yellow('Input your goal: '));
+  const goal =
+    process.argv.slice(2).join(' ') ||
+    (await rl.question(chalk.yellow('Input your goal: ')));
   await startAI(config, goal);
 
   rl.close();
