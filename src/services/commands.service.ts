@@ -1,19 +1,30 @@
 import chalk from 'chalk';
 import type { ChatCompletionRequestMessage } from 'openai/api';
 import {
-  ANSWER_ONLY_JSON_PARSEABLE_ARRAY_OF_STRINGS,
-  ANSWER_ONLY_ONE_COMMAND,
-  CREATE_CLI,
-  FIX_COMMANDS,
-} from '../constants';
+  CREATE_CLI_PROMPT,
+  FIX_CLI_PROMPT,
+  REPHRASE_GOAL_PROMPT,
+} from '../prompt';
 import { createChatCompletion } from '../libs/openai';
 import logger from '../libs/logger';
 import { parseJson } from '../utils';
 
 const MAX_RETRIES = 3;
-const NOT_AN_ARRAY_WARNING_MESSAGE = (target: string, retry: number) => `Generating commands for target '${chalk.yellow(
-  target,
-)}' failed. Retrying... (${retry}/${MAX_RETRIES})`;
+const NOT_AN_ARRAY_WARNING_MESSAGE = (target: string, retry: number) =>
+  `Generating commands for target '${chalk.yellow(
+    target,
+  )}' failed. Retrying... (${retry}/${MAX_RETRIES})`;
+
+export async function rephraseGoal(goal: string): Promise<string> {
+  const messages: Array<ChatCompletionRequestMessage> = [
+    {
+      role: 'system',
+      content: REPHRASE_GOAL_PROMPT.replace('{goal}', `"${goal}"`),
+    },
+  ];
+  const completion = await createChatCompletion(messages);
+  return completion.data.choices[0].message.content;
+}
 
 export async function generateCommands(target: string): Promise<string[]> {
   const logTarget = chalk.yellow(target);
@@ -22,11 +33,7 @@ export async function generateCommands(target: string): Promise<string[]> {
   const messages: ChatCompletionRequestMessage[] = [
     {
       role: 'system',
-      content: CREATE_CLI.replace('{goal}', target),
-    },
-    {
-      role: 'system',
-      content: ANSWER_ONLY_JSON_PARSEABLE_ARRAY_OF_STRINGS,
+      content: CREATE_CLI_PROMPT.replace('{goal}', target),
     },
   ];
 
@@ -40,6 +47,8 @@ export async function generateCommands(target: string): Promise<string[]> {
       break;
     } else {
       logger.warn(NOT_AN_ARRAY_WARNING_MESSAGE(target, retry));
+      const rephrasedTarget = await rephraseGoal(target);
+      logger.info(`Rephrased goal: ${chalk.yellow(rephrasedTarget)}`);
     }
   }
 
@@ -55,14 +64,10 @@ export async function fixErrorCommands(
   const messages: ChatCompletionRequestMessage[] = [
     {
       role: 'system',
-      content: FIX_COMMANDS.replace('{command}', target).replace(
+      content: FIX_CLI_PROMPT.replace('{command}', target).replace(
         '{error}',
-        error.trim().replace(/\n/g, '').substring(0, 100),
+        `"${error.trim().replace(/\n/g, '').substring(0, 100)}"`,
       ),
-    },
-    {
-      role: 'system',
-      content: ANSWER_ONLY_ONE_COMMAND,
     },
   ];
 

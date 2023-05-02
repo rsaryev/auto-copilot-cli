@@ -10,27 +10,10 @@ import {
   questionRegenerateCommands,
   readlineClose,
 } from './utils';
-import { createChatCompletion } from './libs/openai';
 import { IConfig } from './types';
 import logger from './libs/logger';
 import { executeCommandsService } from './services/execute-commands.service';
-import { generateCommands } from './services/commands.service';
-import { ANSWER_ONLY_STRING, REPHRASE_GOAL } from './constants';
-
-async function rephraseGoal(goal: string): Promise<string> {
-  const messages: Array<ChatCompletionRequestMessage> = [
-    {
-      role: 'system',
-      content: REPHRASE_GOAL.replace('{goal}', goal),
-    },
-    {
-      role: 'system',
-      content: ANSWER_ONLY_STRING,
-    },
-  ];
-  const completion = await createChatCompletion(messages);
-  return completion.data.choices[0].message.content;
-}
+import { generateCommands, rephraseGoal } from './services/commands.service';
 
 async function start(
   config: IConfig,
@@ -52,7 +35,8 @@ async function start(
       `Planning commands: \n${chalk.yellow(
         commands
           .map(
-            (c, i) => `${i + 1}. ${c.trim().replace(/\n/g, '').substring(0, 50)}`,
+            (c, i) =>
+              `${i + 1}. ${c.trim().replace(/\n/g, '').substring(0, 50)}`,
           )
           .join('\n'),
       )}`,
@@ -65,12 +49,15 @@ async function start(
 
     await executeCommandsService.executeCommands(commands, isAutoExecute);
   } catch (err: any) {
-    if (axios.isAxiosError(err) && err.response?.status === 401) {
-      config.OPENAI_API_KEY = await questionOpenAIKey();
-      setConfig(config);
-      await start(config, goal, isAutoExecute);
-      return;
+    if (axios.isAxiosError(err)) {
+      if (err.response?.status === 401) {
+        config.OPENAI_API_KEY = await questionOpenAIKey();
+        setConfig(config);
+        await start(config, goal, isAutoExecute);
+        return;
+      }
     }
+
     console.log(err);
     logger.error(chalk.red(err));
   }

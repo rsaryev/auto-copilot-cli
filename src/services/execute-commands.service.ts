@@ -14,9 +14,11 @@ class ExecuteCommandsService {
     return ExecuteCommandsService.instance;
   }
 
-  private async runCommand(command: string) {
+  private async runCommand(command: string, timeout = 10000) {
     try {
-      const { stdout, stderr } = await promisify(exec)(command);
+      const { stdout, stderr } = await promisify(exec)(command, {
+        timeout,
+      });
       return { result: stdout, error: stderr };
     } catch (e: any) {
       return { result: '', error: e.stderr };
@@ -34,7 +36,7 @@ class ExecuteCommandsService {
         const confirmation = await questionExecuteCommand(commandSmall);
         if (!confirmation) {
           logger.info(`Skipping command: ${chalk.green(commandSmall)}`);
-          return;
+          continue;
         }
       }
 

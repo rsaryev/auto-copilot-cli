@@ -9,7 +9,7 @@ export function setConfig(config: IConfig): void {
 }
 export const getConfig: () => Promise<IConfig> = async (): Promise<IConfig> => {
   const defaultConfig: Omit<IConfig, 'OPENAI_API_KEY'> = {
-    TEMPERATURE: 0.9,
+    TEMPERATURE: 0,
     MAX_TOKENS: 150,
   };
 
