@@ -1,69 +1,65 @@
 import chalk from 'chalk';
-import { promisify } from 'util';
-import { exec } from 'child_process';
-import { questionExecuteCommand, questionFixCommand } from '../utils';
+import { exec, ExecException } from 'child_process';
 import logger from '../libs/logger';
-import { fixErrorCommands } from './commands.service';
+import { ITask } from '../types';
+import { questionExecuteTask } from '../utils';
 
-class ExecuteCommandsService {
-  private static instance: ExecuteCommandsService;
-  static getInstance() {
-    if (!ExecuteCommandsService.instance) {
-      ExecuteCommandsService.instance = new ExecuteCommandsService();
-    }
-    return ExecuteCommandsService.instance;
-  }
-
-  private async runCommand(command: string, timeout = 10000) {
-    try {
-      const { stdout, stderr } = await promisify(exec)(command, {
-        timeout,
-      });
-      return { result: stdout, error: stderr };
-    } catch (e: any) {
-      return { result: '', error: e.stderr };
-    }
-  }
-
-  async executeCommands(
-    commands: string | string[],
-    isAutoExecute: boolean,
-  ): Promise<void> {
-    const commandQueue = commands instanceof Array ? commands : [commands];
-    for (const command of commandQueue) {
-      const commandSmall = command.trim().replace(/\n/g, '').substring(0, 50);
-      if (!isAutoExecute) {
-        const confirmation = await questionExecuteCommand(commandSmall);
-        if (!confirmation) {
-          logger.info(`Skipping command: ${chalk.green(commandSmall)}`);
-          continue;
-        }
-      }
-
-      const { result, error } = await this.runCommand(command);
-      if (error) {
-        logger.error(
-          `Command: ${chalk.green(commandSmall)} executed with error: ${error}`,
-        );
-
-        if (!isAutoExecute) {
-          const confirmation = await questionFixCommand(commandSmall);
-          if (!confirmation) {
-            logger.info(`Skipping fix command: ${chalk.green(commandSmall)}`);
-            return;
+class CommandExecutor {
+  private static async runCommand(
+    command: string,
+    timeout = 10000,
+  ): Promise<{
+    result: string;
+    error: string | null;
+  }> {
+    return new Promise((resolve) => {
+      exec(
+        command,
+        { timeout },
+        (error: ExecException | null, stdout: string, stderr: string) => {
+          if (error) {
+            resolve({ result: stdout, error: stderr });
+          } else {
+            resolve({ result: stdout, error: null });
           }
-        }
-
-        const fixedCommand = await fixErrorCommands(command, error);
-        await this.executeCommands(fixedCommand, isAutoExecute);
-      }
-      logger.info(
-        `Command: ${chalk.green(
-          commandSmall,
-        )} executed successfully with result: ${result}`,
+        },
       );
+    });
+  }
+
+  async executeCommand(task: ITask, isAutoExecute: boolean): Promise<void> {
+    if (task.type !== 'COMMAND') {
+      return;
     }
+
+    if (!isAutoExecute && !task.dangerous) {
+      const confirmation = await questionExecuteTask(task.description);
+      if (!confirmation) {
+        logger.info(`Skipping: ${chalk.green(task.description)}`);
+        return;
+      }
+    }
+
+    if (task.dangerous) {
+      const confirmation = await questionExecuteTask(
+        `⚠️ Execute dangerous task: ${chalk.red(task.description)}`,
+      );
+      if (!confirmation) {
+        logger.info(
+          `Skipping dangerous task: ${chalk.green(task.description)}`,
+        );
+        return;
+      }
+    }
+
+    const { error } = await CommandExecutor.runCommand(task.command!);
+    if (error) {
+      logger.error(`❌ ${task.description}`);
+      return;
+    }
+
+    logger.info(`✅ ${task.description}`);
   }
 }
 
-export const executeCommandsService = ExecuteCommandsService.getInstance();
+export const executeCommandsService = new CommandExecutor();
