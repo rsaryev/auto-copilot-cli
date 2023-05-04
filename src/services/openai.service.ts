@@ -14,11 +14,13 @@ export async function AIGenerateTasks(goal: string): Promise<ITask[]> {
           COMMAND - execute command in terminal
           WRITE_FILE - write file in terminal
         
+        Dangerous tasks:
+            If the task is dangerous, the AI system will ask for approval before executing it.
+
         Example: [
             {
                 "type": "COMMAND",
                 "command": "git add .",
-                // if the command is very dangerous, then you need to specify dangerous: true
                 "dangerous": "{{true/false}}",
                 "description": "{{"description"}}",
             }, 
@@ -29,9 +31,7 @@ export async function AIGenerateTasks(goal: string): Promise<ITask[]> {
                 "content": "Hello world",
                 "description": "{{"description"}}",
             }]
-        `
-      .trim()
-      .replace(/\n/g, ''),
+        `.trim(),
   );
 
   const messages: ChatCompletionRequestMessage[] = [

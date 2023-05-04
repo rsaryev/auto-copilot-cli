@@ -8,7 +8,7 @@ import {
   questionOpenAIKey,
   readlineClose,
 } from './utils';
-import { IConfig } from './types';
+import { CommandTask, IConfig, TaskType } from './types';
 import logger from './libs/logger';
 import { AIGenerateTasks, rephraseGoal } from './services/openai.service';
 import { ex } from './services/execute.service';
@@ -30,19 +30,24 @@ async function start(
       return;
     }
 
-    logger.info(
-      `\n${tasks
-        .map(
-          ({ command, description, type, dangerous }, index) =>
-            `${index + 1}. ${
-              tasks.length > 50 ? '' : command ? chalk.yellow(command) + ' ' : ''
-            }${description} | ${type} | ${
-              dangerous ? chalk.red('dangerous') : chalk.green('safe')
-            }`,
-        )
-        .join('\n')}`,
-    );
+    const plan = tasks
+      .map((task, i) => {
+        if (task.type === TaskType.COMMAND) {
+          const commandTask = task as CommandTask;
+          return `${i + 1}. ${chalk.green(commandTask.command)} | ${
+            commandTask.type
+          } | ${
+            commandTask.dangerous ? chalk.red('dangerous') : chalk.green('safe')
+          }`;
+        } else {
+          return `${i + 1}. ${task.description} | ${task.type} | ${
+            task.dangerous ? chalk.red('dangerous') : chalk.green('safe')
+          }`;
+        }
+      })
+      .join('\n');
 
+    logger.info(`Tasks for goal: ${chalk.yellow(goal)}\n${plan}`);
     const isApproved = await questionApprovePlan();
     if (!isApproved) {
       await start(config, goal, isAutoExecute);
@@ -71,7 +76,9 @@ async function start(
 export async function main() {
   const config = await getConfig();
   const isAutoExecute = process.argv.includes('--a') || false;
-  const goal = process.argv.slice(2).join(' ').replace('--a', '').trim() || (await questionGoal());
+  const goal =
+    process.argv.slice(2).join(' ').replace('--a', '').trim() ||
+    (await questionGoal());
 
   await start(config, goal, isAutoExecute);
 

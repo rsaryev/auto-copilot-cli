@@ -3,12 +3,24 @@ export interface IConfig {
   MAX_TOKENS: number;
   TEMPERATURE: number;
 }
-
-export interface ITask {
-  type: 'COMMAND' | 'WRITE_FILE';
-  command?: string;
-  path?: string;
-  content?: string;
-  dangerous?: boolean;
-  description: string;
+export enum TaskType {
+  COMMAND = 'COMMAND',
+  WRITE_FILE = 'WRITE_FILE',
 }
+
+export interface BaseTask {
+  type: TaskType;
+  description: string;
+  dangerous: boolean;
+}
+
+export interface CommandTask extends BaseTask {
+  command: string;
+}
+
+export interface WriteFileTask extends BaseTask {
+  path: string;
+  content: string;
+}
+
+export type ITask = CommandTask | WriteFileTask;
