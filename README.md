@@ -6,19 +6,22 @@
 
 1. Install the CLI tool globally using npm ```npm i -g auto-copilot-cli``` or  ```yarn global add auto-copilot-cli```
 2. Get your OpenAI API key from https://platform.openai.com/account/api-keys
-3. Run the CLI tool using ```auto-copilot-cli``` or ```auto-copilot create nestjs project```
+3. Run the CLI tool using ```auto-copilot-cli```
 4. Enter your OpenAI API key when prompted
 5. Setup an alias for the ```auto-copilot-cli``` command, for example ```ac```
+
+### Options
+
+- ```-a, --auto-execute``` - Enable auto execute mode (default: false)
+- ```-m, --model <modelName>``` - OpenAI model name (default: "gpt-3.5-turbo")
+- ```-h, --help``` - display help for command
+- ```-V, --version``` - output the version number
 
 ### Recommendations
 
 - Use npx to run the CLI tool without installing it globally ```npx auto-copilot-cli``` using the latest version
 - Use the ```--a``` flag carefully for automatic execution of commands
-
-### Commands
-
-- ```auto-copilot-cli``` - Starts the CLI tool and not auto execute tasks
-- ```auto-copilot-cli --a``` - Starts the CLI tool and auto execute tasks if the command is safe else it will ask for confirmation
+- Not changing the default model is recommended
 
 ### Examples using the CLI tool
 - ```auto-copilot-cli create 10 empty files with names from 1 to 10``` - Creates 10 empty files with names from 1 to 10

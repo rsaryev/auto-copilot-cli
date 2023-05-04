@@ -1,6 +1,5 @@
 import chalk from 'chalk';
 import axios from 'axios';
-
 import { getConfig, setConfig } from './config/config';
 import {
   questionApprovePlan,
@@ -12,18 +11,25 @@ import { CommandTask, IConfig, TaskType } from './types';
 import logger from './libs/logger';
 import { AIGenerateTasks, rephraseGoal } from './services/openai.service';
 import { ex } from './services/execute.service';
+import { initProgram } from './utils/program';
 
-async function start(
-  config: IConfig,
-  goal: string,
-  isAutoExecute: boolean,
-): Promise<void> {
+async function start({
+  config,
+  model,
+  goal,
+  isAutoExecute,
+}: {
+  config: IConfig;
+  goal: string;
+  model: string;
+  isAutoExecute: boolean;
+}): Promise<void> {
   try {
-    goal = await rephraseGoal(goal);
+    goal = await rephraseGoal(goal, model);
     logger.info(`Rephrased: ${chalk.yellow(goal)}`);
 
     logger.info(`Planning tasks for goal: ${chalk.yellow(goal)}`);
-    const tasks = await AIGenerateTasks(goal);
+    const tasks = await AIGenerateTasks(goal, model);
     if (tasks.length === 0) {
       logger.info(`No tasks found for goal: ${chalk.yellow(goal)}`);
       await readlineClose();
@@ -50,7 +56,12 @@ async function start(
     logger.info(`Tasks for goal: ${chalk.yellow(goal)}\n${plan}`);
     const isApproved = await questionApprovePlan();
     if (!isApproved) {
-      await start(config, goal, isAutoExecute);
+      await start({
+        config,
+        goal,
+        isAutoExecute,
+        model,
+      });
       return;
     }
 
@@ -63,24 +74,38 @@ async function start(
       if (err.response?.status === 401) {
         config.OPENAI_API_KEY = await questionOpenAIKey();
         setConfig(config);
-        await start(config, goal, isAutoExecute);
+        await start({
+          config,
+          goal,
+          isAutoExecute,
+          model,
+        });
         return;
       }
+
+      logger.error(err?.response?.data.error.message);
+      return;
     }
 
-    console.log(err);
-    logger.error(chalk.red(err));
+    logger.error('Something went wrong!');
   }
 }
 
 export async function main() {
+  const program = await initProgram();
   const config = await getConfig();
-  const isAutoExecute = process.argv.includes('--a') || false;
-  const goal =
-    process.argv.slice(2).join(' ').replace('--a', '').trim() ||
-    (await questionGoal());
+  const options = program.opts();
+  const isAutoExecute = options.autoExecute;
+  const model = options.model;
+  const goal = program.args.join(' ').trim() || (await questionGoal());
 
-  await start(config, goal, isAutoExecute);
+  logger.info(`options: ${JSON.stringify(options)}`);
+  await start({
+    config,
+    model,
+    goal,
+    isAutoExecute,
+  });
 
   return readlineClose();
 }

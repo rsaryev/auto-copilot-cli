@@ -4,7 +4,10 @@ import * as os from 'os';
 import { parseTasks } from '../utils';
 import { ITask } from '../types';
 
-export async function AIGenerateTasks(goal: string): Promise<ITask[]> {
+export async function AIGenerateTasks(
+  goal: string,
+  model: string,
+): Promise<ITask[]> {
   const content = JSON.stringify(
     `
         I will send you a goal, and you will respond with a list of tasks to achieve the goal. These tasks will be used in an artificial intelligence system that also works with the command line ${os.type()}.
@@ -45,11 +48,14 @@ export async function AIGenerateTasks(goal: string): Promise<ITask[]> {
     },
   ];
 
-  const completion = await createChatCompletion(messages);
+  const completion = await createChatCompletion(messages, model);
   return parseTasks(completion);
 }
 
-export async function rephraseGoal(goal: string): Promise<string> {
+export async function rephraseGoal(
+  goal: string,
+  model: string,
+): Promise<string> {
   const messages: Array<ChatCompletionRequestMessage> = [
     {
       role: 'system',
@@ -63,6 +69,6 @@ export async function rephraseGoal(goal: string): Promise<string> {
       content: goal,
     },
   ];
-  const completion = await createChatCompletion(messages);
+  const completion = await createChatCompletion(messages, model);
   return completion.choices[0]?.message?.content || '';
 }
