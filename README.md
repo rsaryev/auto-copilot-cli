@@ -30,6 +30,17 @@
 - ```auto-copilot-cli create pdf file with top 10 movies``` - Creates a PDF file with top 10 movies
 - ```auto-copilot-cli create js file with implementation of binary search``` - Creates a file with implementation of binary search
 
+### Setup an alias
+
+1. Open your terminal
+2. Run ```nano ~/.bashrc``` or ```nano ~/.zshrc```
+3. Add ```alias copilot="auto-copilot-cli"``` to the end of the file
+4. Save the file and run ```source ~/.bashrc``` or ```source ~/.zshrc```
+
+Or try this option:
+
+1. ```npx auto-copilot-cli setup alias for the npx auto-copilot-cli command and add it to the zshrc file with the name copilot```
+
 ### Demo
 
 ![demo](./demo.gif)
