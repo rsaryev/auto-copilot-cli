@@ -4,15 +4,18 @@ import chalk from 'chalk';
 
 const rl = createInterface({ input, output });
 
-export const questionAutoExecuteTasks = async function (): Promise<boolean> {
-  const req = await rl.question('Execute tasks automatically (y/n)? ');
-  return req === 'y';
-};
 export const questionExecuteTask = async function (
   task: string,
 ): Promise<boolean> {
-  const req = await rl.question(`Execute command ${chalk.green(task)} (y/n)? `);
+  const req = await rl.question(`Execute tasks ${chalk.green(task)} (y/n)? `);
   return req === 'y';
+};
+
+export const questionExecuteDangerousTask = async function (
+    task: string,
+    ): Promise<boolean> {
+    const req = await rl.question(`⚠️Execute dangerous tasks ${chalk.red(task)} (y/n)? `);
+    return req === 'y';
 };
 
 export const questionApprovePlan = async function (): Promise<boolean> {
