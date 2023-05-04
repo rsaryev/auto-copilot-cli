@@ -11,8 +11,8 @@ import {
 } from './utils';
 import { IConfig } from './types';
 import logger from './libs/logger';
-import { AIGenerateTasks, rephraseGoal } from './utils/openai';
-import { ex } from './services/execute.services';
+import { AIGenerateTasks, rephraseGoal } from './services/openai.service';
+import { ex } from './services/execute.service';
 
 async function start(
   config: IConfig,

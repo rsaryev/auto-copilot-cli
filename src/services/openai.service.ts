@@ -1,7 +1,7 @@
 import { createChatCompletion } from '../libs/openai';
 import { ChatCompletionRequestMessage } from 'openai/api';
 import * as os from 'os';
-import { parseTasks } from './index';
+import { parseTasks } from '../utils';
 import { ITask } from '../types';
 
 export async function AIGenerateTasks(goal: string): Promise<ITask[]> {
