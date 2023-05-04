@@ -4,9 +4,7 @@
 
 ### Demo
 
-
-
-https://user-images.githubusercontent.com/70219513/236127229-7ff5d433-6c53-4ca3-a81b-3b2757cf0326.mov
+![demo](./demo.gif)
 
 
 
