@@ -21,8 +21,9 @@ async function start(
 ): Promise<void> {
   try {
     goal = await rephraseGoal(goal);
-    logger.info(`Rephrased goal: ${chalk.yellow(goal)}`);
+    logger.info(`Rephrased: ${chalk.yellow(goal)}`);
 
+    logger.info(`Planning tasks for goal: ${chalk.yellow(goal)}`);
     const tasks = await AIGenerateTasks(goal);
     if (tasks.length === 0) {
       logger.info(`No tasks found for goal: ${chalk.yellow(goal)}`);
@@ -31,12 +32,12 @@ async function start(
     }
 
     logger.info(
-      `Planning: \n${tasks
+      `\n${tasks
         .map(
           ({ command, description, type, dangerous }, index) =>
             `${index + 1}. ${
-              tasks.length > 50 ? '' : command ? chalk.yellow(command) : ''
-            } ${description} | ${type} | ${
+              tasks.length > 50 ? '' : command ? chalk.yellow(command) + ' ' : ''
+            }${description} | ${type} | ${
               dangerous ? chalk.red('dangerous') : chalk.green('safe')
             }`,
         )
