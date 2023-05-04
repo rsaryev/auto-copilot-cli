@@ -20,7 +20,7 @@
 ### Recommendations
 
 - Use npx to run the CLI tool without installing it globally ```npx auto-copilot-cli``` using the latest version
-- Use the ```--a``` flag carefully for automatic execution of commands
+- Use the ```-a``` flag carefully for automatic execution of commands
 - Not changing the default model is recommended
 
 ### Examples using the CLI tool
