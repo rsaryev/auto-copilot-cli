@@ -8,7 +8,6 @@
 2. Get your OpenAI API key from https://platform.openai.com/account/api-keys
 3. Run the CLI tool using ```auto-copilot-cli```
 4. Enter your OpenAI API key when prompted
-5. Setup an alias for the ```auto-copilot-cli``` command, for example ```ac```
 
 ### Options
 
@@ -19,6 +18,7 @@
 
 ### Recommendations
 
+- Setup an alias for the ```npx auto-copilot-cli``` command, for example ```ac``` or ```copilot```
 - Use npx to run the CLI tool without installing it globally ```npx auto-copilot-cli``` using the latest version
 - Use the ```-a``` flag carefully for automatic execution of commands
 - Not changing the default model is recommended
