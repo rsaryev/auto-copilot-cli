@@ -24,7 +24,7 @@
 - Not changing the default model is recommended
 
 ### Examples using the CLI tool
-- ```auto-copilot-cli create image.png with cat``` - Creates an image with a cat
+- ```auto-copilot-cli create image.png with cat and open it``` - Creates an image with a cat and opens it
 - ```auto-copilot-cli create 10 empty files with names from 1 to 10``` - Creates 10 empty files with names from 1 to 10
 - ```auto-copilot-cli create koa.js project``` - Creates a Koa.js project
 - ```auto-copilot-cli start postgresql in docker``` - Starts PostgreSQL in Docker
