@@ -4,10 +4,11 @@
 
 ### Quick Start
 
-1. Install the CLI tool globally using npm ```npm i -g auto-copilot-cli``` or  ```yarn global add auto-copilot-cli```
-2. Get your OpenAI API key from https://platform.openai.com/account/api-keys
-3. Run the CLI tool using ```auto-copilot-cli```
-4. Enter your OpenAI API key when prompted
+1. Install Node.js v18.16.0 or higher - https://nodejs.org/en/download/
+2. Install the CLI tool globally using npm ```npm i -g auto-copilot-cli``` or  ```yarn global add auto-copilot-cli```
+3. Get your OpenAI API key from https://platform.openai.com/account/api-keys
+4. Run the CLI tool using ```auto-copilot-cli```
+5. Enter your OpenAI API key when prompted
 
 ### Options
 
