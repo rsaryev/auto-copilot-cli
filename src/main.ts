@@ -12,7 +12,7 @@ import {
 import { IConfig } from './types';
 import logger from './libs/logger';
 import { AIGenerateTasks, rephraseGoal } from './utils/openai';
-import { executeCommandsService } from './services/execute-commands.service';
+import { ex } from './services/execute.services';
 
 async function start(
   config: IConfig,
@@ -51,7 +51,7 @@ async function start(
 
     for (const task of tasks) {
       logger.info(`Executing task: ${chalk.yellow(task.description)}`);
-      await executeCommandsService.executeCommand(task, isAutoExecute);
+      await ex.handle(task, isAutoExecute);
     }
   } catch (err: unknown) {
     if (axios.isAxiosError(err)) {
