@@ -1,6 +1,6 @@
 {
   "name": "auto-copilot-cli",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "main": "index.js",
   "description": "This CLI tool uses the ChatGPT language model to create commands. This allows you to create a list of tasks and perform them sequentially, optimizing your workflow and increasing the efficiency of repetitive actions..",
   "scripts": {
@@ -33,6 +33,7 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
+    "ajv": "^8.12.0",
     "chalk": "^4.1.2",
     "cli-table": "^0.3.11",
     "openai": "^3.2.1",
