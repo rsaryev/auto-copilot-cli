@@ -24,6 +24,7 @@
 - Not changing the default model is recommended
 
 ### Examples using the CLI tool
+- ```auto-copilot-cli create image.png with cat``` - Creates an image with a cat
 - ```auto-copilot-cli create 10 empty files with names from 1 to 10``` - Creates 10 empty files with names from 1 to 10
 - ```auto-copilot-cli create koa.js project``` - Creates a Koa.js project
 - ```auto-copilot-cli start postgresql in docker``` - Starts PostgreSQL in Docker
@@ -48,4 +49,3 @@ Or try this option:
 ## Description
 
 This CLI tool uses the ChatGPT language model to create commands. This allows you to create a list of tasks and perform them sequentially, optimizing your workflow and increasing the efficiency of repetitive actions.
-
