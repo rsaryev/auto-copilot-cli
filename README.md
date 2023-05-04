@@ -4,11 +4,16 @@
 
 ### Quick Start
 
-1. Install the CLI tool globally using npm ```npm i -g auto-copilot-cli```
+1. Install the CLI tool globally using npm ```npm i -g auto-copilot-cli``` or  ```yarn global add auto-copilot-cli```
 2. Get your OpenAI API key from https://platform.openai.com/account/api-keys
 3. Run the CLI tool using ```auto-copilot-cli``` or ```auto-copilot create nestjs project```
 4. Enter your OpenAI API key when prompted
 5. Setup an alias for the ```auto-copilot-cli``` command, for example ```ac```
+
+### Recommendations
+
+- Use npx to run the CLI tool without installing it globally ```npx auto-copilot-cli``` using the latest version
+- Use the ```--a``` flag carefully for automatic execution of commands
 
 ### Commands
 
