@@ -4,7 +4,6 @@ import axios from 'axios';
 import { getConfig, setConfig } from './config/config';
 import {
   questionApprovePlan,
-  questionAutoExecuteTasks,
   questionGoal,
   questionOpenAIKey,
   readlineClose,
@@ -71,8 +70,9 @@ async function start(
 
 export async function main() {
   const config = await getConfig();
-  const goal = process.argv.slice(2).join(' ') || (await questionGoal());
-  const isAutoExecute = await questionAutoExecuteTasks();
+  const isAutoExecute = process.argv.includes('--a') || false;
+  const goal = process.argv.slice(2).join(' ').replace('--a', '').trim() || (await questionGoal());
+
   await start(config, goal, isAutoExecute);
 
   return readlineClose();
