@@ -26,6 +26,11 @@
 - Use the ```-a``` flag carefully for automatic execution of commands
 - Not changing the default model is recommended
 
+### Demo
+
+https://user-images.githubusercontent.com/70219513/236427819-1b7a99c2-db5e-4965-b939-6318d455df4e.mov
+
+
 ### Examples using the CLI tool
 - ```auto-copilot-cli create image.png with cat and open it``` - Creates an image with a cat and opens it
 - ```auto-copilot-cli create 10 empty files with names from 1 to 10``` - Creates 10 empty files with names from 1 to 10
@@ -42,14 +47,6 @@
 4. Or add ```npx npm-check-updates -u auto-copilot-cli && npx auto-copilot-cli"``` update the CLI tool before running it
 5. Save the file and run ```source ~/.bashrc``` or ```source ~/.zshrc```
 6. Run ```copilot -V``` to check if the alias is working
-
-### Demo
-
-
-
-https://user-images.githubusercontent.com/70219513/236418269-0b82dbb6-4ff9-4eda-992c-c9d6f3e96ad1.mov
-
-
 
 ## Description
 
