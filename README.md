@@ -6,10 +6,11 @@
 ### Quick Start
 
 1. Install Node.js v18.16.0 or higher - https://nodejs.org/en/download/
-2. Install the CLI tool globally using npm ```npm i -g auto-copilot-cli``` or  ```yarn global add auto-copilot-cli```
-3. Get your OpenAI API key from https://platform.openai.com/account/api-keys
-4. Run the CLI tool using ```auto-copilot-cli```
-5. Enter your OpenAI API key when prompted
+2. Run ```npx auto-copilot-cli``` or ```npm install -g auto-copilot-cli```
+3. Run the CLI tool using ```auto-copilot-cli``` or ```npx auto-copilot-cli```
+4. Enter your OpenAI API key - https://platform.openai.com/account/api-keys
+5. Run ```npx auto-copilot-cli -V``` to check if the CLI tool is working
+6. Run ```npx auto-copilot-cli <goal>``` run the CLI tool with a goal
 
 ### Options
 
@@ -21,7 +22,7 @@
 ### Recommendations
 
 - Setup an alias for the ```npx auto-copilot-cli``` command, for example ```ac``` or ```copilot```
-- Use npx to run the CLI tool without installing it globally ```npx auto-copilot-cli``` using the latest version
+- Use npx to run the CLI tool without installing it globally ```npx auto-copilot-cli```
 - Use the ```-a``` flag carefully for automatic execution of commands
 - Not changing the default model is recommended
 
@@ -33,16 +34,14 @@
 - ```auto-copilot-cli create pdf file with top 10 movies``` - Creates a PDF file with top 10 movies
 - ```auto-copilot-cli create js file with implementation of binary search``` - Creates a file with implementation of binary search
 
-### Setup an alias
+### Example setup alias
 
 1. Open your terminal
 2. Run ```nano ~/.bashrc``` or ```nano ~/.zshrc```
-3. Add ```alias copilot="auto-copilot-cli"``` to the end of the file
-4. Save the file and run ```source ~/.bashrc``` or ```source ~/.zshrc```
-
-Or try this option:
-
-1. ```npx auto-copilot-cli setup alias for the npx auto-copilot-cli command and add it to the zshrc file with the name copilot```
+3. Add ```npx auto-copilot-cli"``` to the end of the file
+4. Or add ```npx npm-check-updates -u auto-copilot-cli && npx auto-copilot-cli"``` update the CLI tool before running it
+5. Save the file and run ```source ~/.bashrc``` or ```source ~/.zshrc```
+6. Run ```copilot -V``` to check if the alias is working
 
 ### Demo
 
