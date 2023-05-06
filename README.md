@@ -21,7 +21,24 @@ npm install -g auto-copilot-cli
 - Node.js v18.16.0 or higher - https://nodejs.org/en/download/
 - OpenAI API key - https://platform.openai.com/account/api-keys
 
+### Options
+
+- ```-a, --auto-execute``` - Enable auto execute mode (default: false) - Deprecated
+- ```-m, --model <modelName>``` - OpenAI model name (default: "gpt-3.5-turbo")
+- ```-h, --help``` - display help for command
+- ```-V, --version``` - output the version number
+
+### Demo
+
+https://user-images.githubusercontent.com/70219513/236625955-9d4f6b9d-77b8-4515-8a95-423795a1089b.MOV
+
 ## Usage example
+
+Rename all files in the current directory to lowercase
+
+```bash
+auto-copilot-cli rename all files in the current directory to lowercase
+```
 
 Convert all images in the current directory to size 100x100
 
@@ -52,8 +69,3 @@ Start PostgreSQL in Docker
 ```bash
 auto-copilot-cli start postgresql in docker
 ```
-
-
-### Demo
-
-https://user-images.githubusercontent.com/70219513/236418269-0b82dbb6-4ff9-4eda-992c-c9d6f3e96ad1.mov

@@ -4,52 +4,29 @@ import * as os from 'os';
 
 import { StructuredOutputParser } from 'langchain/output_parsers';
 import { langchain } from '../libs/langchain';
-import { ITask, TaskType } from '../types';
-
-const BaseTaskSchema = z
-  .object({
-    description: z.string().describe('description of task'),
-    dangerous: z
-      .boolean()
-      .describe(
-        'if the task is dangerous, the AI system will ask for approval before executing it.',
-      ),
-  })
-  .nonstrict();
-export const CommandTaskSchema = BaseTaskSchema.merge(
-  z.object({
-    type: z.enum([TaskType.COMMAND]),
-    command: z.string().describe(`execute command in terminal`),
-  }),
-);
-export const WriteFileTaskSchema = BaseTaskSchema.merge(
-  z.object({
-    type: z.enum([TaskType.WRITE_FILE]),
-    path: z.string().describe('path for creating file'),
-    content: z.string().describe('content for creating file'),
-  }),
-);
 
 export const LLMGenerateTasks = async (
   goal: string,
   model: string,
 ): Promise<{
-  tasks: ITask[];
+  shell_script: string;
+  dangerous: boolean;
 }> => {
   const parser = StructuredOutputParser.fromZodSchema(
     z.object({
-      tasks: z.array(
-        z
-          .union([CommandTaskSchema, WriteFileTaskSchema])
-          .describe(`list of tasks to achieve the goal`),
-      ),
+      shell_script: z.string().describe(`shell script with comments`),
+      dangerous: z
+        .boolean()
+        .describe(
+          `if the shell is very dangerous, it will be marked as dangerous`,
+        ),
     }),
   );
 
   const formatInstructions = parser.getFormatInstructions();
 
   const prompt = new PromptTemplate({
-    template: `You a goal, and you will respond with a list of tasks to achieve the goal.
+    template: `You a goal, and you will respond with a shell script to achieve the goal.
      Reaching the goal should as best as possible with the tasks you provide for the automated system working with terminal commands and file system.
         \n{format_instructions}
         Here is the goal: 

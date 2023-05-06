@@ -2,73 +2,68 @@ import chalk from 'chalk';
 import axios from 'axios';
 import { getConfig, setConfig } from './config/config';
 import {
+  openShellScript,
   questionApprovePlan,
   questionGoal,
   questionOpenAIKey,
-  readlineClose,
 } from './utils';
-import { CommandTask, IConfig, TaskType, WriteFileTask } from './types';
+import { IConfig } from './types';
 import logger from './libs/logger';
-import { ex } from './services/execute.service';
 import { initProgram } from './utils/program';
 import { LLMGenerateTasks, LLMRephraseGoal } from './services/llm.service';
+import { executeCommand } from './utils/command';
+import path from 'path';
+import fs from 'fs';
+import { randomUUID } from 'crypto';
+import * as os from 'os';
 
 async function start({
   config,
   model,
   goal,
-  isAutoExecute,
 }: {
   config: IConfig;
   goal: string;
   model: string;
-  isAutoExecute: boolean;
 }): Promise<void> {
   try {
     const { rephrased_goal } = await LLMRephraseGoal(goal, model);
     goal = rephrased_goal;
 
     logger.info(`Planning tasks for goal: ${chalk.yellow(goal)}`);
-    const { tasks } = await LLMGenerateTasks(goal, model);
-    const plan = `${tasks
-      .map((task, i) => {
-        const command = task as CommandTask;
-        const writeFile = task as WriteFileTask;
+    const { shell_script, dangerous } = await LLMGenerateTasks(goal, model);
 
-        if (task.type === TaskType.COMMAND) {
-          return `${i + 1}. ${chalk.green(command.command)} | ${
-            writeFile.description
-          } | ${
-            command.dangerous ? chalk.red('dangerous') : chalk.green('safe')
-          }`;
-        }
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'auto_copilot_cli'));
+    const pathToSaveShellScript = path.join(tempDir, `./${randomUUID()}.sh`);
 
-        if (task.type === TaskType.WRITE_FILE) {
-          return `${i + 1}. ${writeFile.description} | ${
-            writeFile.dangerous ? chalk.red('dangerous') : chalk.green('safe')
-          }`;
-        }
+    fs.writeFileSync(pathToSaveShellScript, shell_script);
 
-        return '';
-      })
-      .join('\n')}`;
+    const questionOpenScript = await openShellScript(
+      pathToSaveShellScript,
+      dangerous,
+    );
+    if (questionOpenScript) {
+      await executeCommand(`open ${pathToSaveShellScript}`);
+    }
 
-    logger.info(`Tasks for goal: ${chalk.yellow(goal)}\n${plan}`);
     const isApproved = await questionApprovePlan();
     if (!isApproved) {
-      await start({
-        config,
-        goal,
-        isAutoExecute,
-        model,
-      });
+      logger.info('Aborted');
       return;
     }
 
-    for (const task of tasks) {
-      logger.info(`Executing task: ${chalk.yellow(task.description)}`);
-      await ex.handle(task, isAutoExecute);
+    logger.info(`Executing tasks for goal: ${chalk.yellow(goal)}`);
+
+    const shell_script_modified = fs
+      .readFileSync(pathToSaveShellScript, 'utf-8')
+      .toString();
+
+    const isModifiedShellScript = shell_script !== shell_script_modified;
+    if (isModifiedShellScript) {
+      logger.warn('Shell script was modified');
     }
+
+    await executeCommand(shell_script_modified);
   } catch (err: unknown) {
     if (axios.isAxiosError(err)) {
       if (err.response?.status === 401) {
@@ -77,7 +72,6 @@ async function start({
         await start({
           config,
           goal,
-          isAutoExecute,
           model,
         });
         return;
@@ -95,7 +89,6 @@ export async function main() {
   const program = await initProgram();
   const config = await getConfig();
   const options = program.opts();
-  const isAutoExecute = options.autoExecute;
   const model = options.model;
   const goal = program.args.join(' ').trim() || (await questionGoal());
 
@@ -104,8 +97,5 @@ export async function main() {
     config,
     model,
     goal,
-    isAutoExecute,
   });
-
-  return readlineClose();
 }
