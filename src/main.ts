@@ -7,11 +7,11 @@ import {
   questionOpenAIKey,
   readlineClose,
 } from './utils';
-import { CommandTask, IConfig, TaskType } from './types';
+import { CommandTask, IConfig, TaskType, WriteFileTask } from './types';
 import logger from './libs/logger';
-import { AIGenerateTasks, rephraseGoal } from './services/openai.service';
 import { ex } from './services/execute.service';
 import { initProgram } from './utils/program';
+import { LLMGenerateTasks, LLMRephraseGoal } from './services/llm.service';
 
 async function start({
   config,
@@ -25,33 +25,33 @@ async function start({
   isAutoExecute: boolean;
 }): Promise<void> {
   try {
-    goal = await rephraseGoal(goal, model);
-    logger.info(`Rephrased: ${chalk.yellow(goal)}`);
+    const { rephrased_goal } = await LLMRephraseGoal(goal, model);
+    goal = rephrased_goal;
 
     logger.info(`Planning tasks for goal: ${chalk.yellow(goal)}`);
-    const tasks = await AIGenerateTasks(goal, model);
-    if (tasks.length === 0) {
-      logger.info(`No tasks found for goal: ${chalk.yellow(goal)}`);
-      await readlineClose();
-      return;
-    }
-
-    const plan = tasks
+    const { tasks } = await LLMGenerateTasks(goal, model);
+    const plan = `${tasks
       .map((task, i) => {
+        const command = task as CommandTask;
+        const writeFile = task as WriteFileTask;
+
         if (task.type === TaskType.COMMAND) {
-          const commandTask = task as CommandTask;
-          return `${i + 1}. ${chalk.green(commandTask.command)} | ${
-            commandTask.type
+          return `${i + 1}. ${chalk.green(command.command)} | ${
+            writeFile.description
           } | ${
-            commandTask.dangerous ? chalk.red('dangerous') : chalk.green('safe')
-          }`;
-        } else {
-          return `${i + 1}. ${task.description} | ${task.type} | ${
-            task.dangerous ? chalk.red('dangerous') : chalk.green('safe')
+            command.dangerous ? chalk.red('dangerous') : chalk.green('safe')
           }`;
         }
+
+        if (task.type === TaskType.WRITE_FILE) {
+          return `${i + 1}. ${writeFile.description} | ${
+            writeFile.dangerous ? chalk.red('dangerous') : chalk.green('safe')
+          }`;
+        }
+
+        return '';
       })
-      .join('\n');
+      .join('\n')}`;
 
     logger.info(`Tasks for goal: ${chalk.yellow(goal)}\n${plan}`);
     const isApproved = await questionApprovePlan();

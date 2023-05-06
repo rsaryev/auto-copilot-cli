@@ -9,17 +9,18 @@ export enum TaskType {
 }
 
 export interface BaseTask {
-  type: TaskType;
   description: string;
   dangerous: boolean;
 }
 
 export interface CommandTask extends BaseTask {
+  type: TaskType.COMMAND;
   command: string;
 }
 
 export interface WriteFileTask extends BaseTask {
   path: string;
+  type: TaskType.WRITE_FILE;
   content: string;
 }
 
