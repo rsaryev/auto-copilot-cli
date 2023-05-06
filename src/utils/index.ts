@@ -1,1 +1,1 @@
-export * from './readline';
+export * from './inquirer';

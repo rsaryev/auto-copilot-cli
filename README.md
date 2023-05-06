@@ -21,7 +21,20 @@ npm install -g auto-copilot-cli
 - Node.js v18.16.0 or higher - https://nodejs.org/en/download/
 - OpenAI API key - https://platform.openai.com/account/api-keys
 
+### Options
+
+- ```-a, --auto-execute``` - Enable auto execute mode (default: false) - Deprecated
+- ```-m, --model <modelName>``` - OpenAI model name (default: "gpt-3.5-turbo")
+- ```-h, --help``` - display help for command
+- ```-V, --version``` - output the version number
+
 ## Usage example
+
+Rename all files in the current directory to lowercase
+
+```bash
+auto-copilot-cli rename all files in the current directory to lowercase
+```
 
 Convert all images in the current directory to size 100x100
 
