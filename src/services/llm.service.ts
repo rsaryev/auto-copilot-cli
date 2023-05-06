@@ -96,6 +96,5 @@ export async function LLMRephraseGoal(
 
   const input = await prompt.format({ goal });
   const response = await llm.call(input);
-  console.log(response);
   return await parser.parse(response);
 }
