@@ -6,6 +6,9 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-blue)](https://github.com/transitive-bullshit/chatgpt-api/blob/main/license)
 [![auto-copilot-cli npm downloads](https://img.shields.io/npm/dt/auto-copilot-cli)](https://www.npmjs.com/package/auto-copilot-cli)
 
+![redis](https://user-images.githubusercontent.com/70219513/236693833-46c44c8b-b504-4f64-b377-78b32f4d3c26.gif)
+
+
 ## Description
 
 Auto Copilot is a CLI tool that uses OpenAI models to generate commands for the terminal and file system operations to achieve a goal.
