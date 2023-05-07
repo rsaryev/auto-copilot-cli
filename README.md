@@ -30,7 +30,9 @@ npm install -g auto-copilot-cli
 
 ### Demo
 
-https://user-images.githubusercontent.com/70219513/236625955-9d4f6b9d-77b8-4515-8a95-423795a1089b.MOV
+https://user-images.githubusercontent.com/70219513/236678014-0a4ad864-3c1f-4a08-a8c9-95aaea4c9031.mov
+
+
 
 ## Usage example
 
