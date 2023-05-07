@@ -14,7 +14,9 @@ export const LLMGenerateTasks = async (
 }> => {
   const parser = StructuredOutputParser.fromZodSchema(
     z.object({
-      shell_script: z.string().describe(`shell script with comments`),
+      shell_script: z
+        .string()
+        .describe(`shell script with comments for reach goal`),
       dangerous: z
         .boolean()
         .describe(
@@ -26,19 +28,19 @@ export const LLMGenerateTasks = async (
   const formatInstructions = parser.getFormatInstructions();
 
   const prompt = new PromptTemplate({
-    template: `You a goal, and you will respond with a shell script to achieve the goal.
-     Reaching the goal should as best as possible with the tasks you provide for the automated system working with terminal commands and file system.
-        \n{format_instructions}
-        Here is the goal: 
-        \`\`\`{goal}\`\`\`
-        Operation system: 
-        \`\`\`${os.type()}\n\`\`\`\n`,
-    inputVariables: ['goal'],
+    template:
+      'You a goal, and you will respond with shell script that will execute tasks for this goal.\nHere is the goal: {goal}\n{format_instructions}\nOS: {os}\nDate: {date}\nWorkdir: {workdir}\n',
+    inputVariables: ['goal', 'os', 'date', 'workdir'],
     partialVariables: { format_instructions: formatInstructions },
   });
 
   const llm = await langchain.createOpenAI(model);
-  const input = await prompt.format({ goal });
+  const input = await prompt.format({
+    goal,
+    os: os.type(),
+    date: new Date(),
+    workdir: process.cwd(),
+  });
   const response = await llm.call(input);
 
   const parsed = await parser.parse(response);
@@ -48,30 +50,19 @@ export const LLMGenerateTasks = async (
 export async function LLMRephraseGoal(
   goal: string,
   model: string,
-): Promise<{
-  rephrased_goal: string;
-}> {
+): Promise<string> {
   const parser = StructuredOutputParser.fromZodSchema(
-    z.object({
-      rephrased_goal: z.string().describe(`rephrased goal`),
-    }),
+    z.string().describe(`rephrased goal`),
   );
   const formatInstructions = parser.getFormatInstructions();
 
   const llm = await langchain.createOpenAI(model);
   const prompt = new PromptTemplate({
-    template: `You a goal, and you will respond with as best as possible rephrased goal for the automated system working with terminal commands and file system.
-        \n{format_instructions}
-        Here is the goal: 
-        \`\`\`{goal}\`\`\`
-        Operation system: 
-        \`\`\`${os.type()}\n\`\`\`\n`,
-
-    inputVariables: ['goal'],
+    template: `You a goal, and you will respond with as best as possible rephrased goal for the write shell script.\n{format_instructions}\nHere is the goal: {goal}\nOS: {os}\nDate: {date}\n`,
+    inputVariables: ['goal', 'os', 'date'],
     partialVariables: { format_instructions: formatInstructions },
   });
 
-  const input = await prompt.format({ goal });
-  const response = await llm.call(input);
-  return await parser.parse(response);
+  const input = await prompt.format({ goal, os: os.type(), date: new Date() });
+  return await llm.call(input);
 }

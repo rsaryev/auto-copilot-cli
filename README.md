@@ -52,12 +52,6 @@ Create a file with implementation of binary search
 auto-copilot-cli create js file with implementation of binary search
 ```
 
-Create a PDF file with top 10 movies
-
-```bash
-auto-copilot-cli create pdf file with top 10 movies
-```
-
 Create a Koa.js project
 
 ```bash

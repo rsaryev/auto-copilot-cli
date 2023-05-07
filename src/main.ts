@@ -3,12 +3,11 @@ import axios from 'axios';
 import { getConfig, setConfig } from './config/config';
 import {
   openShellScript,
-  questionApprovePlan,
+  questionExecute,
   questionGoal,
   questionOpenAIKey,
 } from './utils';
 import { IConfig } from './types';
-import logger from './libs/logger';
 import { initProgram } from './utils/program';
 import { LLMGenerateTasks, LLMRephraseGoal } from './services/llm.service';
 import { executeCommand } from './utils/command';
@@ -16,7 +15,9 @@ import path from 'path';
 import fs from 'fs';
 import { randomUUID } from 'crypto';
 import * as os from 'os';
+import { exFunction } from './utils/helpers';
 
+const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'auto_copilot_cli'));
 async function start({
   config,
   model,
@@ -27,41 +28,35 @@ async function start({
   model: string;
 }): Promise<void> {
   try {
-    const { rephrased_goal } = await LLMRephraseGoal(goal, model);
-    goal = rephrased_goal;
-
-    logger.info(`Planning tasks for goal: ${chalk.yellow(goal)}`);
-    const { shell_script, dangerous } = await LLMGenerateTasks(goal, model);
-
-    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'auto_copilot_cli'));
     const pathToSaveShellScript = path.join(tempDir, `./${randomUUID()}.sh`);
+    goal = await exFunction(
+      LLMRephraseGoal.bind(null, goal, model),
+      `rephrasing`,
+    );
+
+    const { shell_script, dangerous } = await exFunction(
+      LLMGenerateTasks.bind(null, goal, model),
+      `generating`,
+    );
 
     fs.writeFileSync(pathToSaveShellScript, shell_script);
-
-    const questionOpenScript = await openShellScript(
-      pathToSaveShellScript,
-      dangerous,
-    );
+    console.log(`${dangerous ? chalk.red('✘') : chalk.green('✔')} safe`);
+    const questionOpenScript = await openShellScript();
     if (questionOpenScript) {
-      await executeCommand(`open ${pathToSaveShellScript}`);
+      await exFunction(
+        executeCommand.bind(null, `open ${pathToSaveShellScript}`),
+        `open`,
+      );
     }
 
-    const isApproved = await questionApprovePlan();
+    const isApproved = await questionExecute();
     if (!isApproved) {
-      logger.info('Aborted');
       return;
     }
-
-    logger.info(`Executing tasks for goal: ${chalk.yellow(goal)}`);
 
     const shell_script_modified = fs
       .readFileSync(pathToSaveShellScript, 'utf-8')
       .toString();
-
-    const isModifiedShellScript = shell_script !== shell_script_modified;
-    if (isModifiedShellScript) {
-      logger.warn('Shell script was modified');
-    }
 
     await executeCommand(shell_script_modified);
   } catch (err: unknown) {
@@ -77,11 +72,11 @@ async function start({
         return;
       }
 
-      logger.error(err?.response?.data.error.message);
+      console.log(`${chalk.red('✘')} ${err.message}`);
       return;
     }
 
-    logger.error('Something went wrong!');
+    console.log(`${chalk.red('✘')} something went wrong!`);
   }
 }
 
@@ -92,7 +87,6 @@ export async function main() {
   const model = options.model;
   const goal = program.args.join(' ').trim() || (await questionGoal());
 
-  logger.info(`options: ${JSON.stringify(options)}`);
   await start({
     config,
     model,
