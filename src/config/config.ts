@@ -14,6 +14,7 @@ export const getConfig = (): IConfig => {
       OPENAI_API_KEY: 'sk-xxx',
       MAX_TOKENS: 400,
       TEMPERATURE: 0,
+      MODEL: 'gpt-3.5-turbo',
     });
   }
 

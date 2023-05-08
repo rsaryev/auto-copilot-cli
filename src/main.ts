@@ -18,22 +18,20 @@ import { exFunction } from './utils/helpers';
 
 async function start({
   config,
-  model,
   goal,
 }: {
   config: IConfig;
   goal: string;
-  model: string;
 }): Promise<void> {
   try {
     const pathToSaveShellScript = path.join(tempDir, `./${randomUUID()}.sh`);
     goal = await exFunction(
-      LLMRephraseGoal.bind(null, goal, model),
+      LLMRephraseGoal.bind(null, goal, config.MODEL),
       `rephrasing`,
     );
 
     const { shell_script, dangerous } = await exFunction(
-      LLMGenerateTasks.bind(null, goal, model),
+      LLMGenerateTasks.bind(null, goal, config.MODEL),
       `generating`,
     );
 
@@ -65,12 +63,15 @@ async function start({
         await start({
           config,
           goal,
-          model,
         });
         return;
       }
 
-      console.log(`${chalk.red('✘')} ${err.message}`);
+      console.log(
+        `${chalk.red('✘')} ${
+          err.response?.data?.error?.message || err.message
+        }`,
+      );
       return;
     }
 
@@ -81,13 +82,10 @@ async function start({
 export async function main() {
   const program = await initProgram();
   const config = getConfig();
-  const options = program.opts();
-  const model = options.model;
   const goal = program.args.join(' ').trim() || (await questionGoal());
 
   await start({
     config,
-    model,
     goal,
   });
 }

@@ -34,10 +34,12 @@ curl -s https://raw.githubusercontent.com/rsaryev/auto-copilot-cli/main/deployme
 ### Options
 
 - ```-a, --auto-execute``` - Enable auto execute mode (default: false) - Deprecated
-- ```-m, --model <modelName>``` - OpenAI model name (default: "gpt-3.5-turbo")
 - ```-h, --help``` - display help for command
 - ```-V, --version``` - output the version number
-- ```--openai-api-key <key>``` - OpenAI API key (https://platform.openai.com/account/api-keys)
+
+### Configuration
+- ```-m, --model <modelName>``` - OpenAI model name (default: "gpt-3.5-turbo")
+- ```-k, --openai-api-key <key>``` - OpenAI API key (https://platform.openai.com/account/api-keys)
 
 ### Demo
 
