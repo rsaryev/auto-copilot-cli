@@ -11,7 +11,7 @@
 
 ## Description
 
-Auto Copilot is a CLI tool that uses OpenAI models to generate commands for the terminal and file system operations to achieve a goal.
+Auto Copilot is a powerful and useful tool for developers that uses OpenAI models to translate natural language into commands, scripts, and file operations that will help you achieve your goal as safely as possible.
 
 ## Installation
 
@@ -28,8 +28,8 @@ curl -s https://raw.githubusercontent.com/rsaryev/auto-copilot-cli/main/deployme
 
 ### Requirements
 
-- Node.js v18.16.0 or higher - https://nodejs.org/en/download/
-- OpenAI API key - https://platform.openai.com/account/api-keys
+- Node.js v18.16.0 or higher - [Install Node.js](https://nodejs.org/en/download/)
+- OpenAI API key - [Get OpenAI API key](https://beta.openai.com/)
 
 ### Options
 - ```-h, --help``` - display help for command
@@ -37,7 +37,7 @@ curl -s https://raw.githubusercontent.com/rsaryev/auto-copilot-cli/main/deployme
 
 ### Configuration
 - ```-m, --model <modelName>``` - OpenAI model name (default: "gpt-3.5-turbo")
-- ```-k, --openai-api-key <key>``` - OpenAI API key (https://platform.openai.com/account/api-keys)
+- ```-k, --openai-api-key <key>``` - OpenAI API key ([Get OpenAI API key](https://beta.openai.com/))
 - ```-e, --editor <editor>``` - Editor to open files (default: "code")
 
 ### Demo
@@ -45,35 +45,21 @@ curl -s https://raw.githubusercontent.com/rsaryev/auto-copilot-cli/main/deployme
 https://user-images.githubusercontent.com/70219513/236678014-0a4ad864-3c1f-4a08-a8c9-95aaea4c9031.mov
 
 
-
-## Usage example
-
-Rename all files in the current directory to lowercase
+## Usage
 
 ```bash
-copilot rename all files in the current directory to lowercase
-```
+# Rename all files in the current directory to lowercase
+$ copilot rename files in the current directory to lowercase
 
-Convert all images in the current directory to size 100x100
+# Convert all images in the current directory to size 100x100
+$ copilot convert all images in the current directory to size 100x100
 
-```bash
-copilot convert all images in the current directory to size 100x100
-```
+# Create a file with implementation of binary search
+$ copilot create a file with implementation of binary search
 
-Create a file with implementation of binary search
+# Create a simple web server in Node.js using Koajs
+$ copilot create a simple web server in Node.js using Koajs
 
-```bash
-copilot create js file with implementation of binary search
-```
-
-Create a Koa.js project
-
-```bash
-copilot create koa.js project should have a route /hello that returns Hello World!
-```
-
-Start PostgreSQL in Docker
-
-```bash
-copilot start postgresql in docker
+# Start PostgreSQL in Docker
+$ copilot start PostgreSQL in Docker
 ```
