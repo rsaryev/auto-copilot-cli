@@ -48,7 +48,7 @@ export async function shellService({
       .toString();
 
     await executeCommand(shell_script_modified);
-  } catch (err: unknown) {
+  } catch (err: any) {
     if (axios.isAxiosError(err)) {
       if (err.response?.status === 401) {
         config.OPENAI_API_KEY = await questionOpenAIKey();
@@ -59,15 +59,10 @@ export async function shellService({
         });
         return;
       }
-
-      console.log(
-        `${chalk.red('✘')} ${
-          err.response?.data?.error?.message || err.message
-        }`,
-      );
-      return;
     }
 
-    console.log(`${chalk.red('✘')} something went wrong!`);
+    console.log(
+      `${chalk.red('✘')} ${err.response?.data?.error?.message || err.message}`,
+    );
   }
 }

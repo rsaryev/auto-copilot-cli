@@ -71,13 +71,7 @@ export async function LLMRephraseGoal(
   return llm.call(input);
 }
 
-export async function LLMRefactorCode(
-  path: string,
-  model: string,
-  outputPath: string,
-): Promise<fs.WriteStream> {
-  const llm = await langchain.createOpenAI(model, true);
-
+export async function LLMRefactorCode(path: string): Promise<string> {
   const prompt = new PromptTemplate({
     template:
       'You have to refactor the code using best practices. The answer should only be refactored code.\nHere is the code: {code}\nOS: {os}\nDate: {date}\n',
@@ -85,24 +79,9 @@ export async function LLMRefactorCode(
   });
 
   const code = fs.readFileSync(path, 'utf-8');
-  const input = await prompt.format({
+  return prompt.format({
     code,
     os: os.type(),
     date: new Date().toString(),
   });
-
-  const writeStream = fs.createWriteStream(outputPath);
-
-  llm.call(input, undefined, [
-    {
-      handleLLMNewToken(token: string) {
-        writeStream.write(token);
-      },
-      handleLLMEnd(): Promise<void> | void {
-        writeStream.end();
-      },
-    },
-  ]);
-
-  return writeStream;
 }

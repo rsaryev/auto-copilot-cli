@@ -4,6 +4,10 @@ import ora from 'ora';
 import { exec } from 'child_process';
 import fs from 'fs';
 import chalk from 'chalk';
+import axios, { AxiosError } from 'axios';
+import { questionOpenAIKey } from '../utils';
+import { setConfig } from '../config/config';
+import { langchain } from '../libs/langchain';
 
 export async function refactorService({
   config,
@@ -18,28 +22,44 @@ export async function refactorService({
       return;
     }
 
-    const fileType = path.split('.').pop();
+    const fileType = path.split('.').pop()!;
     const outputPath = path.replace(`.${fileType}`, `.refactored.${fileType}`);
     const spinner = ora('Refactoring').start();
-    const writeStream = await LLMRefactorCode(path, config.MODEL, outputPath);
+    const input = await LLMRefactorCode(path);
 
-    return new Promise((resolve, reject) => {
-      writeStream.on('open', () => {
-        exec(`${config.EDITOR || 'code'} ${outputPath}`);
-      });
+    const writeStream = fs.createWriteStream(outputPath);
+    const llm = await langchain.createOpenAI(config.MODEL, true);
+    exec(`${config.EDITOR || 'code'} ${outputPath}`);
 
-      writeStream.on('close', () => {
-        spinner.succeed();
-        return resolve('closed');
-      });
+    await llm.call(input, undefined, [
+      {
+        handleLLMNewToken(token: string) {
+          writeStream.write(token);
+        },
+        handleLLMEnd() {
+          spinner.succeed();
+          writeStream.end();
+        },
 
-      writeStream.on('error', (err) => {
-        spinner.fail();
-        return reject(err);
-      });
-    });
-  } catch (err) {
-    console.log(`Error refactoring file: ${path}`);
-    return Promise.reject(err);
+        handleLLMError() {
+          spinner.fail();
+        },
+      },
+    ]);
+  } catch (err: any) {
+    if (axios.isAxiosError(err)) {
+      if ((err as AxiosError).response?.status === 401) {
+        config.OPENAI_API_KEY = await questionOpenAIKey();
+        setConfig(config);
+        await refactorService({
+          config,
+          path,
+        });
+        return;
+      }
+    }
+    console.log(
+      `${chalk.red('✘')} ${err.response?.data?.error?.message || err.message}`,
+    );
   }
 }
