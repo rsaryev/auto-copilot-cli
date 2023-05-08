@@ -15,6 +15,7 @@ export const getConfig = (): IConfig => {
       MAX_TOKENS: 400,
       TEMPERATURE: 0,
       MODEL: 'gpt-3.5-turbo',
+      EDITOR: 'code',
     });
   }
 

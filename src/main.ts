@@ -39,10 +39,8 @@ async function start({
     console.log(`${dangerous ? chalk.red('✘') : chalk.green('✔')} safe`);
     const questionOpenScript = await openShellScript();
     if (questionOpenScript) {
-      await exFunction(
-        executeCommand.bind(null, `open ${pathToSaveShellScript}`),
-        `open`,
-      );
+      const command = `${config.EDITOR || 'code'} ${pathToSaveShellScript}`;
+      await executeCommand(command);
     }
 
     const isApproved = await questionExecute();

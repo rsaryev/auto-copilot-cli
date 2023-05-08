@@ -11,9 +11,9 @@ export const tempDir = fs.mkdtempSync(
 export function initProgram(): Command {
   const program = new Command();
   program
-    .option('-a, --auto-execute', 'Enable auto execute mode', false)
     .option('-m, --model <modelName>', 'Set OpenAI model name')
     .option('-k, --openai-api-key <key>', 'Set OpenAI API key')
+    .option('-e, --editor <editor>', 'Set editor to open files')
     .version(getVersions())
     .action(commandAction)
     .parse(process.argv);
@@ -25,6 +25,7 @@ function commandAction(args: {
   autoExecute: boolean;
   model: string;
   openaiApiKey: string;
+  editor: string;
 }) {
   const config = getConfig();
 
@@ -36,6 +37,12 @@ function commandAction(args: {
 
   if (args.model) {
     config.MODEL = args.model;
+    setConfig(config);
+    process.exit(0);
+  }
+
+  if (args.editor) {
+    config.EDITOR = args.editor;
     setConfig(config);
     process.exit(0);
   }

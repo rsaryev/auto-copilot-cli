@@ -3,4 +3,5 @@ export interface IConfig {
   MAX_TOKENS: number;
   TEMPERATURE: number;
   MODEL: string;
+  EDITOR: string;
 }
