@@ -6,7 +6,8 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-blue)](https://github.com/transitive-bullshit/chatgpt-api/blob/main/license)
 [![auto-copilot-cli npm downloads](https://img.shields.io/npm/dt/auto-copilot-cli)](https://www.npmjs.com/package/auto-copilot-cli)
 
-![redis](https://user-images.githubusercontent.com/70219513/236693833-46c44c8b-b504-4f64-b377-78b32f4d3c26.gif)
+
+https://user-images.githubusercontent.com/70219513/236838657-5a17ee40-7263-4b02-b22d-12ac5e08dc96.MOV
 
 
 ## Description
@@ -41,9 +42,7 @@ curl -s https://raw.githubusercontent.com/rsaryev/auto-copilot-cli/main/deployme
 - ```-k, --openai-api-key <key>``` - OpenAI API key ([Get OpenAI API key](https://beta.openai.com/))
 - ```-e, --editor <editor>``` - Editor to open files (default: "code")
 
-### Demo
-
-https://user-images.githubusercontent.com/70219513/236678014-0a4ad864-3c1f-4a08-a8c9-95aaea4c9031.mov
+![redis](https://user-images.githubusercontent.com/70219513/236693833-46c44c8b-b504-4f64-b377-78b32f4d3c26.gif)
 
 
 ## Usage
