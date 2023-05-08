@@ -6,7 +6,7 @@ name: Node.js Package
 on:
   release:
     types: [created]
-
+  workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
 jobs:
   publish-npm:
     runs-on: ubuntu-latest
