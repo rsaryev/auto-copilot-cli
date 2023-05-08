@@ -11,7 +11,7 @@
 
 ## Description
 
-Auto Copilot is a powerful and useful tool for developers that uses OpenAI models to translate natural language into commands, scripts, and file operations that will help you achieve your goal as safely as possible.
+Auto Copilot is a powerful and useful tool for developers that uses OpenAI models to translate natural language into commands, scripts, refactoring code and more that will help you achieve your goal as safely as possible.
 
 ## Installation
 
@@ -32,6 +32,7 @@ curl -s https://raw.githubusercontent.com/rsaryev/auto-copilot-cli/main/deployme
 - OpenAI API key - [Get OpenAI API key](https://beta.openai.com/)
 
 ### Options
+- ```-r, --refactor <file>``` - refactor code
 - ```-h, --help``` - display help for command
 - ```-V, --version``` - output the version number
 
@@ -48,6 +49,9 @@ https://user-images.githubusercontent.com/70219513/236678014-0a4ad864-3c1f-4a08-
 ## Usage
 
 ```bash
+# Refactor code
+$ copilot -r <file>
+
 # Rename all files in the current directory to lowercase
 $ copilot rename files in the current directory to lowercase
 
