@@ -2,6 +2,8 @@ import { IConfig } from '../types';
 import { LLMRefactorCode } from './llm.service';
 import ora from 'ora';
 import { exec } from 'child_process';
+import fs from 'fs';
+import chalk from 'chalk';
 
 export async function refactorService({
   config,
@@ -11,6 +13,11 @@ export async function refactorService({
   path: string;
 }) {
   try {
+    if (!fs.existsSync(path)) {
+      console.log(`${chalk.red('✘')} no such file or directory: ${path}`);
+      return;
+    }
+
     const fileType = path.split('.').pop();
     const outputPath = path.replace(`.${fileType}`, `.refactored.${fileType}`);
     const spinner = ora('Refactoring').start();
