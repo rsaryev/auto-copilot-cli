@@ -1,22 +1,17 @@
 import chalk from 'chalk';
 import axios from 'axios';
-import { getConfig, setConfig } from './config/config';
-import {
-  openShellScript,
-  questionExecute,
-  questionGoal,
-  questionOpenAIKey,
-} from './utils';
-import { IConfig } from './types';
-import { initProgram, tempDir } from './utils/program';
-import { LLMGenerateTasks, LLMRephraseGoal } from './services/llm.service';
-import { executeCommand } from './utils/command';
+import { setConfig } from '../config/config';
+import { openShellScript, questionExecute, questionOpenAIKey } from '../utils';
+import { IConfig } from '../types';
+import { LLMGenerateTasks, LLMRephraseGoal } from './llm.service';
+import { executeCommand } from '../utils/command';
 import path from 'path';
 import fs from 'fs';
 import { randomUUID } from 'crypto';
-import { exFunction } from './utils/helpers';
+import { exFunction } from '../utils/helpers';
+import { tempDir } from '../index';
 
-async function start({
+export async function shellService({
   config,
   goal,
 }: {
@@ -58,7 +53,7 @@ async function start({
       if (err.response?.status === 401) {
         config.OPENAI_API_KEY = await questionOpenAIKey();
         setConfig(config);
-        await start({
+        await shellService({
           config,
           goal,
         });
@@ -75,15 +70,4 @@ async function start({
 
     console.log(`${chalk.red('✘')} something went wrong!`);
   }
-}
-
-export async function main() {
-  const program = await initProgram();
-  const config = getConfig();
-  const goal = program.args.join(' ').trim() || (await questionGoal());
-
-  await start({
-    config,
-    goal,
-  });
 }

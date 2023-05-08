@@ -1,7 +1,7 @@
 import { PromptTemplate } from 'langchain/prompts';
 import { z } from 'zod';
 import * as os from 'os';
-
+import fs from 'fs';
 import { StructuredOutputParser } from 'langchain/output_parsers';
 import { langchain } from '../libs/langchain';
 
@@ -29,7 +29,7 @@ export const LLMGenerateTasks = async (
 
   const prompt = new PromptTemplate({
     template:
-      'You a goal, and you will respond with shell script that will execute tasks for this goal.\nHere is the goal: {goal}\n{format_instructions}\nOS: {os}\nDate: {date}\nWorkdir: {workdir}\n',
+      'You have a goal, and you will respond with a shell script that will execute tasks for this goal.\nHere is the goal: {goal}\n{format_instructions}\nOS: {os}\nDate: {date}\nWorkdir: {workdir}\n',
     inputVariables: ['goal', 'os', 'date', 'workdir'],
     partialVariables: { format_instructions: formatInstructions },
   });
@@ -38,7 +38,7 @@ export const LLMGenerateTasks = async (
   const input = await prompt.format({
     goal,
     os: os.type(),
-    date: new Date(),
+    date: new Date().toString(),
     workdir: process.cwd(),
   });
   const response = await llm.call(input);
@@ -58,11 +58,51 @@ export async function LLMRephraseGoal(
 
   const llm = await langchain.createOpenAI(model);
   const prompt = new PromptTemplate({
-    template: `You a goal, and you will respond with as best as possible rephrased goal for the write shell script.\n{format_instructions}\nHere is the goal: {goal}\nOS: {os}\nDate: {date}\n`,
+    template: `You have a goal, and you will respond with the best possible rephrased goal for writing a shell script.\n{format_instructions}\nHere is the goal: {goal}\nOS: {os}\nDate: {date}\n`,
     inputVariables: ['goal', 'os', 'date'],
     partialVariables: { format_instructions: formatInstructions },
   });
 
-  const input = await prompt.format({ goal, os: os.type(), date: new Date() });
-  return await llm.call(input);
+  const input = await prompt.format({
+    goal,
+    os: os.type(),
+    date: new Date().toString(),
+  });
+  return llm.call(input);
+}
+
+export async function LLMRefactorCode(
+  path: string,
+  model: string,
+  outputPath: string,
+): Promise<fs.WriteStream> {
+  const llm = await langchain.createOpenAI(model, true);
+
+  const prompt = new PromptTemplate({
+    template:
+      'You have to refactor the code using best practices. The answer should only be refactored code.\nHere is the code: {code}\nOS: {os}\nDate: {date}\n',
+    inputVariables: ['code', 'os', 'date'],
+  });
+
+  const code = fs.readFileSync(path, 'utf-8');
+  const input = await prompt.format({
+    code,
+    os: os.type(),
+    date: new Date().toString(),
+  });
+
+  const writeStream = fs.createWriteStream(outputPath);
+
+  llm.call(input, undefined, [
+    {
+      handleLLMNewToken(token: string) {
+        writeStream.write(token);
+      },
+      handleLLMEnd(): Promise<void> | void {
+        writeStream.end();
+      },
+    },
+  ]);
+
+  return writeStream;
 }
