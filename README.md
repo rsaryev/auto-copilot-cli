@@ -19,6 +19,13 @@ Auto Copilot is a CLI tool that uses OpenAI models to generate commands for the 
 npm install -g auto-copilot-cli
 ```
 
+Install Script:
+
+```bash
+curl -s https://raw.githubusercontent.com/rsaryev/auto-copilot-cli/main/deployment/deploy.bash | bash
+```
+
+
 ### Requirements
 
 - Node.js v18.16.0 or higher - https://nodejs.org/en/download/
@@ -42,29 +49,29 @@ https://user-images.githubusercontent.com/70219513/236678014-0a4ad864-3c1f-4a08-
 Rename all files in the current directory to lowercase
 
 ```bash
-auto-copilot-cli rename all files in the current directory to lowercase
+copilot rename all files in the current directory to lowercase
 ```
 
 Convert all images in the current directory to size 100x100
 
 ```bash
-auto-copilot-cli convert all images in the current directory to size 100x100
+copilot convert all images in the current directory to size 100x100
 ```
 
 Create a file with implementation of binary search
 
 ```bash
-auto-copilot-cli create js file with implementation of binary search
+copilot create js file with implementation of binary search
 ```
 
 Create a Koa.js project
 
 ```bash
-auto-copilot-cli create koa.js project should have a route /hello that returns Hello World!
+copilot create koa.js project should have a route /hello that returns Hello World!
 ```
 
 Start PostgreSQL in Docker
 
 ```bash
-auto-copilot-cli start postgresql in docker
+copilot start postgresql in docker
 ```

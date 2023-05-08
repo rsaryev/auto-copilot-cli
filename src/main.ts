@@ -8,16 +8,14 @@ import {
   questionOpenAIKey,
 } from './utils';
 import { IConfig } from './types';
-import { initProgram } from './utils/program';
+import { initProgram, tempDir } from './utils/program';
 import { LLMGenerateTasks, LLMRephraseGoal } from './services/llm.service';
 import { executeCommand } from './utils/command';
 import path from 'path';
 import fs from 'fs';
 import { randomUUID } from 'crypto';
-import * as os from 'os';
 import { exFunction } from './utils/helpers';
 
-const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'auto_copilot_cli'));
 async function start({
   config,
   model,
@@ -82,7 +80,7 @@ async function start({
 
 export async function main() {
   const program = await initProgram();
-  const config = await getConfig();
+  const config = getConfig();
   const options = program.opts();
   const model = options.model;
   const goal = program.args.join(' ').trim() || (await questionGoal());

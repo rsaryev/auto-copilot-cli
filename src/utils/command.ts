@@ -1,6 +1,6 @@
 import { exec } from 'child_process';
 
-export function executeCommand(command: string, timeout = 10000) {
+export function executeCommand(command: string) {
   return new Promise((resolve) => {
     const child = exec(command);
     child.stdout?.on('data', (data) => {
