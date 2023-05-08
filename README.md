@@ -37,6 +37,7 @@ curl -s https://raw.githubusercontent.com/rsaryev/auto-copilot-cli/main/deployme
 - ```-m, --model <modelName>``` - OpenAI model name (default: "gpt-3.5-turbo")
 - ```-h, --help``` - display help for command
 - ```-V, --version``` - output the version number
+- ```--openai-api-key <key>``` - OpenAI API key (https://platform.openai.com/account/api-keys)
 
 ### Demo
 
