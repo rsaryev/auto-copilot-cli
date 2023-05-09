@@ -3,7 +3,7 @@ import path from 'path';
 import { Command } from 'commander';
 import os from 'os';
 import { getConfig, setConfig } from './config/config';
-import { questionGoal } from './utils';
+import { askGoal } from './utils';
 import { shellService } from './services/shell.service';
 import { refactorService } from './services/refactor.service';
 
@@ -60,7 +60,7 @@ async function commandAction(args: {
 
   await shellService({
     config,
-    goal: program.args.join(' ').trim() || (await questionGoal()),
+    goal: program.args.join(' ').trim() || (await askGoal()),
   });
 }
 

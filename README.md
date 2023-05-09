@@ -52,17 +52,17 @@ curl -s https://raw.githubusercontent.com/rsaryev/auto-copilot-cli/main/deployme
 $ copilot -r <file>
 
 # Rename all files in the current directory to lowercase
-$ copilot rename files in the current directory to lowercase
+$ copilot "rename files in the current directory to lowercase"
 
 # Convert all images in the current directory to size 100x100
-$ copilot convert all images in the current directory to size 100x100
+$ copilot "convert all images in the current directory to size 100x100"
 
 # Create a file with implementation of binary search
-$ copilot create a file with implementation of binary search
+$ copilot "create a file with implementation of binary search"
 
 # Create a simple web server in Node.js using Koajs
-$ copilot create a simple web server in Node.js using Koajs
+$ copilot "create a simple web server in Node.js using Koajs"
 
 # Start PostgreSQL in Docker
-$ copilot start PostgreSQL in Docker
+$ copilot "start PostgreSQL in Docker"
 ```

@@ -1,50 +1,48 @@
 import inquirer from 'inquirer';
 
-export const questionExecute = async function (): Promise<boolean> {
-  return inquirer
-    .prompt([
-      {
-        type: 'confirm',
-        name: 'execute',
-        message: `execute ?`,
-      },
-    ])
-    .then((answers) => answers.execute);
+export const askExecute = async (): Promise<boolean> => {
+  const { execute } = await inquirer.prompt<{ execute: 'Yes' | 'No' }>([
+    {
+      type: 'list',
+      name: 'execute',
+      message: `🚀 Execute?`,
+      choices: ['Yes', 'No'],
+    },
+  ]);
+  return execute === 'Yes';
 };
 
-export const openShellScript = async function (): Promise<boolean> {
-  return inquirer
-    .prompt([
-      {
-        type: 'confirm',
-        name: 'executeScript',
-        message: `are you sure you want to open to edit script`,
-      },
-    ])
-    .then((answers) => answers.executeScript);
+export const askOpenEditor = async (): Promise<boolean> => {
+  const { openEditor } = await inquirer.prompt<{ openEditor: 'Yes' | 'No' }>([
+    {
+      type: 'list',
+      name: 'openEditor',
+      message: `💻 Open in editor?`,
+      choices: ['Yes', 'No'],
+    },
+  ]);
+  return openEditor === 'Yes';
 };
 
-export const questionGoal = async function (): Promise<string> {
-  return inquirer
-    .prompt([
-      {
-        type: 'input',
-        name: 'goal',
-        message: 'input your goal:',
-      },
-    ])
-    .then((answers) => answers.goal);
+export const askGoal = async (): Promise<string> => {
+  const { goal } = await inquirer.prompt<{ goal: string }>([
+    {
+      type: 'input',
+      name: 'goal',
+      message: '🎯 Input your goal:',
+    },
+  ]);
+  return goal;
 };
 
-export const questionOpenAIKey = async function (): Promise<string> {
-  return inquirer
-    .prompt([
-      {
-        type: 'input',
-        name: 'openAIKey',
-        message:
-          'enter your OpenAI API key. You can get your API key from https://beta.openai.com/account/api-keys:',
-      },
-    ])
-    .then((answers) => answers.openAIKey);
+export const askOpenAIKey = async (): Promise<string> => {
+  const { openAIKey } = await inquirer.prompt<{ openAIKey: string }>([
+    {
+      type: 'input',
+      name: 'openAIKey',
+      message:
+        '🔑 Enter your OpenAI API key. You can get your API key from https://beta.openai.com/account/api-keys:',
+    },
+  ]);
+  return openAIKey;
 };

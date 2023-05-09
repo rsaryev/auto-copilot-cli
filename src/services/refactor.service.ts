@@ -5,7 +5,7 @@ import { exec } from 'child_process';
 import fs from 'fs';
 import chalk from 'chalk';
 import axios, { AxiosError } from 'axios';
-import { questionOpenAIKey } from '../utils';
+import { askOpenEditor, askOpenAIKey } from '../utils';
 import { setConfig } from '../config/config';
 import { langchain } from '../libs/langchain';
 
@@ -24,12 +24,16 @@ export async function refactorService({
 
     const fileType = path.split('.').pop()!;
     const outputPath = path.replace(`.${fileType}`, `.refactored.${fileType}`);
-    const spinner = ora('Refactoring').start();
     const input = await LLMRefactorCode(path);
 
     const writeStream = fs.createWriteStream(outputPath);
-    const llm = await langchain.createOpenAI(config.MODEL, true);
-    exec(`${config.EDITOR || 'code'} ${outputPath}`);
+    const llm = await langchain.createOpenAI(config.MODEL, true, 3256);
+
+    const questionOpenCode = await askOpenEditor();
+    if (questionOpenCode) {
+      exec(`${config.EDITOR || 'code'} ${outputPath}`);
+    }
+    const spinner = ora('Refactoring').start();
 
     await llm.call(input, undefined, [
       {
@@ -49,7 +53,7 @@ export async function refactorService({
   } catch (err: any) {
     if (axios.isAxiosError(err)) {
       if ((err as AxiosError).response?.status === 401) {
-        config.OPENAI_API_KEY = await questionOpenAIKey();
+        config.OPENAI_API_KEY = await askOpenAIKey();
         setConfig(config);
         await refactorService({
           config,
