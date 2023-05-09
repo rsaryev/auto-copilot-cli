@@ -1,69 +1,121 @@
 import { PromptTemplate } from 'langchain/prompts';
 import { z } from 'zod';
 import * as os from 'os';
-import fs from 'fs';
 import { StructuredOutputParser } from 'langchain/output_parsers';
-import { langchain } from '../libs/langchain';
-import { ShellScript } from '../types';
+import { IConfig, IRefactorParams, ShellScript } from '../types';
+import { OpenAI } from 'langchain/llms/openai';
+import fs from 'fs';
 
-export const LLMGenerateShell = async (
-  prompt: string,
-  model: string,
-): Promise<ShellScript> => {
-  const parser = StructuredOutputParser.fromZodSchema(
-    z.object({
-      shell_script: z.string().describe(`shell script with comments`),
-      dangerous: z
-        .boolean()
-        .describe(
-          `if the shell is very dangerous, it will be marked as dangerous`,
-        ),
-      description: z.string().describe(`short description`),
-    }),
-  );
+export class LLMGenerateShell {
+  private llm: OpenAI;
+  constructor(config: IConfig) {
+    this.llm = new OpenAI({
+      modelName: config.MODEL,
+      maxTokens: 1024,
+      temperature: 0,
+      openAIApiKey: config.OPENAI_API_KEY,
+      streaming: false,
+    });
+  }
 
-  const formatInstructions = parser.getFormatInstructions();
+  async generateShell(prompt: string): Promise<ShellScript> {
+    const parser = StructuredOutputParser.fromZodSchema(
+      z.object({
+        shell_script: z.string().describe(`shell script`),
+        dangerous: z
+          .boolean()
+          .describe(
+            `if the shell is very dangerous, it will be marked as dangerous`,
+          ),
+        description: z.string().describe(`short description`),
+      }),
+    );
 
-  const promptTemplate = new PromptTemplate({
-    template: `
-You are in a {os} machine. You want write a $SHELL based on the prompt: {prompt}.
+    const formatInstructions = parser.getFormatInstructions();
+
+    const promptTemplate = new PromptTemplate({
+      template: `
+You should write a shell script based on the prompt: \`{prompt}\` so that it runs in a fully automatic mode in the environment {os} and creates files in the current directory if necessary.
+Every step should be printed to the console so that the user can understand what is happening.
 
 {format_instructions}
 
-OS: {os}
-Date: {date}
-Workdir: {workdir}
+Date: \'{date}\'
+Workdir: \'{workdir}\'
 `,
-    inputVariables: ['prompt', 'os', 'date', 'workdir'],
-    partialVariables: { format_instructions: formatInstructions },
-  });
+      inputVariables: ['prompt', 'os', 'date', 'workdir'],
+      partialVariables: { format_instructions: formatInstructions },
+    });
 
-  const llm = await langchain.createOpenAI(model, false, 1024);
-  const input = await promptTemplate.format({
-    prompt,
-    os: os.type(),
-    date: new Date().toString(),
-    workdir: process.cwd(),
-  });
+    const input = await promptTemplate.format({
+      prompt: prompt,
+      os: os.platform(),
+      date: new Date().toISOString(),
+      workdir: process.cwd(),
+    });
 
-  const response = await llm.call(input);
-  const parsed = await parser.parse(response);
-  return parsed || [];
-};
+    const response = await this.llm.call(input);
+    return parser.parse(response);
+  }
 
-export async function LLMRefactorCode(path: string): Promise<string> {
-  const promptTemplate = new PromptTemplate({
-    template: `
-Refactor the following code: {code}
-Return the refactored code.
-`,
-    inputVariables: ['code', 'date'],
-  });
+  static async generateShell(
+    config: IConfig,
+    prompt: string,
+  ): Promise<ShellScript> {
+    return new LLMGenerateShell(config).generateShell(prompt);
+  }
+}
 
-  const code = fs.readFileSync(path, 'utf-8');
-  return promptTemplate.format({
-    code,
-    os: os.type(),
-    date: new Date().toString(),
-  });
+export class LLMCode {
+  private llm: OpenAI;
+  constructor(config: IConfig) {
+    this.llm = new OpenAI({
+      modelName: config.MODEL,
+      maxTokens: 2056,
+      temperature: 0,
+      openAIApiKey: config.OPENAI_API_KEY,
+      streaming: true,
+    });
+  }
+
+  async refactor({
+    content,
+    output,
+    handleLLMStart,
+    handleLLMEnd,
+    handleLLMError,
+  }: IRefactorParams): Promise<void> {
+    const promptTemplate = new PromptTemplate({
+      template: 'Refactor and fix the following code: {content}',
+      inputVariables: ['content'],
+    });
+
+    const input = await promptTemplate.format({ content });
+    const writeStream = fs.createWriteStream(output);
+
+    await this.llm.call(input, undefined, [
+      {
+        handleLLMStart,
+        handleLLMNewToken(token: string) {
+          writeStream.write(token);
+        },
+        handleLLMEnd() {
+          handleLLMEnd();
+          writeStream.end();
+        },
+        handleLLMError(e): Promise<void> | void {
+          handleLLMError(e);
+          writeStream.end();
+        },
+      },
+    ]);
+  }
+
+  static async refactor(
+    params: IRefactorParams & {
+      config: IConfig;
+    },
+  ): Promise<void> {
+    return new LLMCode(params.config).refactor(params);
+  }
 }

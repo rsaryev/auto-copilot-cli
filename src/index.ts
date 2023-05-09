@@ -3,15 +3,22 @@ import path from 'path';
 import { Command } from 'commander';
 import os from 'os';
 import { getConfig, setConfig } from './config/config';
-import { askGoal } from './utils';
-import { shellService } from './services/shell.service';
-import { refactorService } from './services/refactor.service';
+import { askGoal, askOpenAIKey } from './utils';
+import { CommandService } from './services/commands.services';
+import axios, { AxiosError } from 'axios';
+import chalk from 'chalk';
+
+const nodeVersion = process.versions.node.split('.')[0];
+if (Number(nodeVersion) < 18) {
+  console.log(
+    `${chalk.red('✘')} Please update your node version to 18 or above`,
+  );
+  process.exit(1);
+}
 
 export const tempDir = fs.mkdtempSync(
   path.join(os.tmpdir(), 'auto_copilot_cli'),
 );
-
-export const pwd = process.cwd();
 
 const program = new Command();
 program
@@ -31,6 +38,7 @@ async function commandAction(args: {
   refactor: string;
 }) {
   const config = getConfig();
+  const service = new CommandService(config);
 
   if (args.openaiApiKey) {
     config.OPENAI_API_KEY = args.openaiApiKey;
@@ -50,18 +58,29 @@ async function commandAction(args: {
     process.exit(0);
   }
 
-  if (args.refactor) {
-    await refactorService({
-      config,
-      path: args.refactor,
-    });
-    process.exit(0);
-  }
+  try {
+    if (args.refactor) {
+      await service.refactor(args.refactor);
+      process.exit(0);
+    }
 
-  await shellService({
-    config,
-    goal: program.args.join(' ').trim() || (await askGoal()),
-  });
+    const goal = program.args.join(' ').trim() || (await askGoal());
+    await service.shell(goal);
+  } catch (error: any) {
+    if (axios.isAxiosError(error)) {
+      if ((error as AxiosError).response?.status === 401) {
+        config.OPENAI_API_KEY = await askOpenAIKey();
+        setConfig(config);
+        await commandAction(args);
+        return;
+      }
+    }
+    console.log(
+      `${chalk.red('✘')} ${
+        error.response?.data?.error?.message || error.message
+      }`,
+    );
+  }
 }
 
 function getVersions(): string {

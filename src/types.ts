@@ -10,3 +10,11 @@ export interface ShellScript {
   dangerous: boolean;
   description: string;
 }
+
+export interface IRefactorParams {
+  content: string;
+  output: string;
+  handleLLMStart: () => void;
+  handleLLMEnd: () => void;
+  handleLLMError: (e: any) => void;
+}
