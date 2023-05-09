@@ -5,6 +5,7 @@ import { StructuredOutputParser } from 'langchain/output_parsers';
 import { IConfig, IRefactorParams, ShellScript } from '../types';
 import { OpenAI } from 'langchain/llms/openai';
 import fs from 'fs';
+import { throwLLMParseError } from '../utils/error';
 
 export class LLMGenerateShell {
   private llm: OpenAI;
@@ -18,16 +19,28 @@ export class LLMGenerateShell {
     });
   }
 
+  async wrappedParse<T>(
+    parser: StructuredOutputParser<any>,
+    response: string,
+  ): Promise<T> {
+    try {
+      return await parser.parse(response);
+    } catch (error) {
+      return throwLLMParseError();
+    }
+  }
+
   async generateShell(prompt: string): Promise<ShellScript> {
     const parser = StructuredOutputParser.fromZodSchema(
       z.object({
-        shell_script: z.string().describe(`shell script`),
+        shell_script: z.string().describe(`shell script with comments`),
         dangerous: z
           .boolean()
           .describe(
             `if the shell is very dangerous, it will be marked as dangerous`,
           ),
         description: z.string().describe(`short description`),
+        error: z.string().describe(`short error`),
       }),
     );
 
@@ -38,6 +51,7 @@ export class LLMGenerateShell {
 You should write a shell script based on the prompt: \`{prompt}\` so that it runs in a fully automatic mode in the environment {os} and creates files in the current directory if necessary.
 Every step should be printed to the console so that the user can understand what is happening.
 
+Answer only valid, otherwise the answer will be rejected.
 {format_instructions}
 
 Date: \'{date}\'
@@ -55,7 +69,7 @@ Workdir: \'{workdir}\'
     });
 
     const response = await this.llm.call(input);
-    return parser.parse(response);
+    return this.wrappedParse(parser, response);
   }
 
   static async generateShell(

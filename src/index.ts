@@ -7,7 +7,8 @@ import { askGoal, askOpenAIKey } from './utils';
 import { CommandService } from './services/commands.services';
 import axios, { AxiosError } from 'axios';
 import chalk from 'chalk';
-import { checkNodeVersion, checkUpdate } from './utils/helpers';
+import { checkNodeVersion } from './utils/helpers';
+import { checkUpdate } from './utils/update';
 
 const packageJson = JSON.parse(
   fs.readFileSync(path.join(__dirname, '../package.json'), 'utf8'),

@@ -37,26 +37,6 @@ export function executeCommand(command: string) {
   });
 }
 
-export async function checkUpdate() {
-  const spinner = ora('Checking for updates...').start();
-  try {
-    const { version, name } = JSON.parse(
-      fs.readFileSync(path.join(__dirname, '../../package.json'), 'utf8'),
-    );
-    const response = await fetch(`https://registry.npmjs.org/${name}/latest`);
-    const latestVersionNumber = (await response.json()).version;
-
-    if (latestVersionNumber > version) {
-      const updateMessage = `New version available: ${latestVersionNumber}\nPlease update using: npm i -g ${name}`;
-      spinner.fail(chalk.red(updateMessage));
-    } else {
-      spinner.succeed(chalk.green('No updates available'));
-    }
-  } catch (e) {
-    spinner.fail(chalk.red('Could not check for updates'));
-  }
-}
-
 export function checkNodeVersion() {
   const nodeVersion = process.versions.node.split('.')[0];
   if (Number(nodeVersion) < 18) {

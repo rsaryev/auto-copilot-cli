@@ -9,6 +9,7 @@ export interface ShellScript {
   shell_script: string;
   dangerous: boolean;
   description: string;
+  error: string;
 }
 
 export interface IRefactorParams {
