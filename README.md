@@ -7,7 +7,10 @@
 [![auto-copilot-cli npm downloads](https://img.shields.io/npm/dt/auto-copilot-cli)](https://www.npmjs.com/package/auto-copilot-cli)
 
 
-https://user-images.githubusercontent.com/70219513/236838657-5a17ee40-7263-4b02-b22d-12ac5e08dc96.MOV
+
+
+[Usage](https://github.com/rsaryev/auto-copilot-cli/assets/70219513/91221d9f-d894-4ed7-a035-5413267ec051)
+
 
 
 ## Description
@@ -41,9 +44,6 @@ curl -s https://raw.githubusercontent.com/rsaryev/auto-copilot-cli/main/deployme
 - ```-m, --model <modelName>``` - OpenAI model name (default: "gpt-3.5-turbo")
 - ```-k, --openai-api-key <key>``` - OpenAI API key ([Get OpenAI API key](https://beta.openai.com/))
 - ```-e, --editor <editor>``` - Editor to open files (default: "code")
-
-![redis](https://user-images.githubusercontent.com/70219513/236693833-46c44c8b-b504-4f64-b377-78b32f4d3c26.gif)
-
 
 ## Usage
 
