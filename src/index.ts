@@ -3,15 +3,21 @@ import path from 'path';
 import { Command } from 'commander';
 import os from 'os';
 import { getConfig, setConfig } from './config/config';
-import { askGoal } from './utils';
-import { shellService } from './services/shell.service';
-import { refactorService } from './services/refactor.service';
+import { askGoal, askOpenAIKey } from './utils';
+import { CommandService } from './services/commands.services';
+import axios, { AxiosError } from 'axios';
+import chalk from 'chalk';
+import { checkNodeVersion } from './utils/helpers';
+import { checkUpdate } from './utils/update';
+
+const packageJson = JSON.parse(
+  fs.readFileSync(path.join(__dirname, '../package.json'), 'utf8'),
+);
+const version = packageJson.version;
 
 export const tempDir = fs.mkdtempSync(
   path.join(os.tmpdir(), 'auto_copilot_cli'),
 );
-
-export const pwd = process.cwd();
 
 const program = new Command();
 program
@@ -19,7 +25,7 @@ program
   .option('-k, --openai-api-key <key>', 'Set OpenAI API key')
   .option('-e, --editor <editor>', 'Set editor to open files')
   .option('-r, --refactor <file>', 'Refactor code beta')
-  .version(getVersions())
+  .version(version)
   .action(commandAction)
   .parse(process.argv);
 
@@ -30,7 +36,10 @@ async function commandAction(args: {
   editor: string;
   refactor: string;
 }) {
+  checkNodeVersion();
+  await checkUpdate();
   const config = getConfig();
+  const service = new CommandService(config);
 
   if (args.openaiApiKey) {
     config.OPENAI_API_KEY = args.openaiApiKey;
@@ -50,23 +59,27 @@ async function commandAction(args: {
     process.exit(0);
   }
 
-  if (args.refactor) {
-    await refactorService({
-      config,
-      path: args.refactor,
-    });
-    process.exit(0);
+  try {
+    if (args.refactor) {
+      await service.refactor(args.refactor);
+      process.exit(0);
+    }
+
+    const goal = program.args.join(' ').trim() || (await askGoal());
+    await service.shell(goal);
+  } catch (error: any) {
+    if (axios.isAxiosError(error)) {
+      if ((error as AxiosError).response?.status === 401) {
+        config.OPENAI_API_KEY = await askOpenAIKey();
+        setConfig(config);
+        await commandAction(args);
+        return;
+      }
+    }
+    console.log(
+      `${chalk.red('✘')} ${
+        error.response?.data?.error?.message || error.message
+      }`,
+    );
   }
-
-  await shellService({
-    config,
-    goal: program.args.join(' ').trim() || (await askGoal()),
-  });
-}
-
-function getVersions(): string {
-  const packageJson = JSON.parse(
-    fs.readFileSync(path.join(__dirname, '../package.json'), 'utf8'),
-  );
-  return packageJson.version;
 }
