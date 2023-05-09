@@ -7,14 +7,12 @@ import { askGoal, askOpenAIKey } from './utils';
 import { CommandService } from './services/commands.services';
 import axios, { AxiosError } from 'axios';
 import chalk from 'chalk';
+import { checkNodeVersion, checkUpdate } from './utils/helpers';
 
-const nodeVersion = process.versions.node.split('.')[0];
-if (Number(nodeVersion) < 18) {
-  console.log(
-    `${chalk.red('✘')} Please update your node version to 18 or above`,
-  );
-  process.exit(1);
-}
+const packageJson = JSON.parse(
+  fs.readFileSync(path.join(__dirname, '../package.json'), 'utf8'),
+);
+const version = packageJson.version;
 
 export const tempDir = fs.mkdtempSync(
   path.join(os.tmpdir(), 'auto_copilot_cli'),
@@ -26,7 +24,7 @@ program
   .option('-k, --openai-api-key <key>', 'Set OpenAI API key')
   .option('-e, --editor <editor>', 'Set editor to open files')
   .option('-r, --refactor <file>', 'Refactor code beta')
-  .version(getVersions())
+  .version(version)
   .action(commandAction)
   .parse(process.argv);
 
@@ -37,6 +35,8 @@ async function commandAction(args: {
   editor: string;
   refactor: string;
 }) {
+  checkNodeVersion();
+  await checkUpdate();
   const config = getConfig();
   const service = new CommandService(config);
 
@@ -81,11 +81,4 @@ async function commandAction(args: {
       }`,
     );
   }
-}
-
-function getVersions(): string {
-  const packageJson = JSON.parse(
-    fs.readFileSync(path.join(__dirname, '../package.json'), 'utf8'),
-  );
-  return packageJson.version;
 }
