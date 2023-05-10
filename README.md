@@ -29,6 +29,9 @@ https://github.com/rsaryev/auto-copilot-cli/assets/70219513/67be5d86-295d-4b1b-b
 # Refactor code
 $ copilot -r <file>
 
+# Refactor code with prompt
+$ copilot -r ./server.js -p "transform server.js to use typescript"
+
 # Rename all files in the current directory to lowercase
 $ copilot "rename files in the current directory to lowercase"
 
@@ -71,6 +74,7 @@ curl -s https://raw.githubusercontent.com/rsaryev/auto-copilot-cli/main/deployme
 ### Options
 
 - ```-r, --refactor <file>``` - refactor code
+- ```-p, --prompt <prompt>``` - prompt to refactor code
 - ```-h, --help``` - display help for command
 - ```-V, --version``` - output the version number
 

@@ -25,6 +25,7 @@ program
   .option('-k, --openai-api-key <key>', 'Set OpenAI API key')
   .option('-e, --editor <editor>', 'Set editor to open files')
   .option('-r, --refactor <file>', 'Refactor code beta')
+  .option('-p, --prompt <prompt>', 'Prompt to refactor code')
   .version(version)
   .action(commandAction)
   .parse(process.argv);
@@ -35,6 +36,7 @@ async function commandAction(args: {
   openaiApiKey: string;
   editor: string;
   refactor: string;
+  prompt: string;
 }) {
   checkNodeVersion();
   await checkUpdate();
@@ -61,7 +63,7 @@ async function commandAction(args: {
 
   try {
     if (args.refactor) {
-      await service.refactor(args.refactor);
+      await service.refactor(args.refactor, args.prompt);
       process.exit(0);
     }
 

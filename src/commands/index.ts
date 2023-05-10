@@ -9,8 +9,8 @@ export class CommandService {
     this.config = config;
   }
 
-  public async refactor(filePath: string): Promise<void> {
-    return new Refactor(this.config).executeCommand(filePath);
+  public async refactor(filePath: string, prompt?: string): Promise<void> {
+    return new Refactor(this.config).executeCommand(filePath, prompt);
   }
 
   public async shell(goal: string): Promise<void> {
