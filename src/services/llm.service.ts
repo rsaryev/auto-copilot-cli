@@ -48,14 +48,24 @@ export class LLMGenerateShell {
 
     const promptTemplate = new PromptTemplate({
       template: `
-You should write a shell script based on the prompt: \`{prompt}\` so that it runs in a fully automatic mode in the environment {os} and creates files in the current directory if necessary.
-Every step should be printed to the console so that the user can understand what is happening.
+Goal: Write the best shell script based on the prompt: \`{prompt}\`
 
-Answer only valid, otherwise the answer will be rejected.
+Constraints:
+- The script should be compatible with the specified environment {os}.
+- The script should run without any user assistance.
+- Every step should be printed to the console so that the user can understand what is happening.
+- Check the installed packages and install the missing packages if necessary.
+- If you need to create a file with a code in shell script, use \`cat > filename << EOF\` and then write the code and then \`EOF\` to finish.
+ 
+Recommendations:
+- Use best practices
+
+Answer:
+- Only valid, otherwise the answer will be rejected.
+
 {format_instructions}
-
-Date: \'{date}\'
-Workdir: \'{workdir}\'
+The current time and date is ${new Date().toLocaleString()}
+The current working directory is {workdir}
 `,
       inputVariables: ['prompt', 'os', 'date', 'workdir'],
       partialVariables: { format_instructions: formatInstructions },
@@ -100,11 +110,27 @@ export class LLMCode {
     handleLLMError,
   }: IRefactorParams): Promise<void> {
     const promptTemplate = new PromptTemplate({
-      template: 'Refactor and fix the following code: {content}',
-      inputVariables: ['content'],
+      template: `Refactor and fix the following content
+
+Constraints:
+- If this is code in a programming language, it must be formatted according to the standard for that programming language and run without errors.
+
+Recommendations:
+- Use best practices for the content.
+
+Answer format:
+- Only refactored content without any additional text, otherwise the answer will be rejected.
+
+The content: \`\`\`{content}\`\`\`
+      `,
+      inputVariables: ['content', 'date'],
     });
 
-    const input = await promptTemplate.format({ content });
+    const input = await promptTemplate.format({
+      content,
+      date: new Date().toISOString(),
+    });
+
     const writeStream = fs.createWriteStream(output);
 
     await this.llm.call(input, undefined, [

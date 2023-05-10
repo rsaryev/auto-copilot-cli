@@ -17,7 +17,7 @@ export class CommandService {
     this.config = config;
   }
 
-  public async refactor(filePath: string) {
+  public async refactor(filePath: string): Promise<void> {
     if (!fs.existsSync(filePath)) {
       console.log(`${chalk.red('✘')} no such file or directory: ${filePath}`);
       return;
@@ -44,7 +44,7 @@ export class CommandService {
     });
   }
 
-  public async shell(goal: string) {
+  public async shell(goal: string): Promise<void> {
     const pathToSaveShellScript = path.join(tempDir, `./${randomUUID()}.sh`);
     const { shell_script, dangerous, description } = await exFunction(
       LLMGenerateShell.generateShell.bind(null, this.config, goal),
