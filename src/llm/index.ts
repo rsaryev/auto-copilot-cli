@@ -24,7 +24,7 @@ export class LLMGenerateShell {
     response: string,
   ): Promise<T> {
     try {
-      return await parser.parse(response);
+      return parser.parse(response);
     } catch (error) {
       return throwLLMParseError();
     }
@@ -55,7 +55,7 @@ Constraints:
 - The script should run without any user assistance.
 - Every step should be printed to the console so that the user can understand what is happening.
 - Check the installed packages and install the missing packages if necessary.
-- If you need to create a file with a code in shell script, use \`cat > filename << EOF\` and then write the code and then \`EOF\` to finish.
+- If you need to create a file with a code in shell script, use \`cat > filename << EOF.
  
 Recommendations:
 - Use best practices
@@ -105,6 +105,7 @@ export class LLMCode {
   async refactor({
     content,
     output,
+    prompt,
     handleLLMStart,
     handleLLMEnd,
     handleLLMError,
@@ -119,9 +120,10 @@ Recommendations:
 - Use best practices for the content.
 
 Answer format:
-- Only refactored content without any additional text, otherwise the answer will be rejected.
+- Return only refactored valid content, otherwise the answer will be rejected. 
 
-The content: \`\`\`{content}\`\`\`
+${prompt ? `Prompt for refactoring: \`\`\`${prompt}\`\`\`` : ''}
+The content: {content}
       `,
       inputVariables: ['content', 'date'],
     });
@@ -129,6 +131,7 @@ The content: \`\`\`{content}\`\`\`
     const input = await promptTemplate.format({
       content,
       date: new Date().toISOString(),
+      prompt,
     });
 
     const writeStream = fs.createWriteStream(output);

@@ -15,7 +15,18 @@ export interface ShellScript {
 export interface IRefactorParams {
   content: string;
   output: string;
+  prompt?: string;
   handleLLMStart: () => void;
   handleLLMEnd: () => void;
   handleLLMError: (e: any) => void;
+}
+
+export abstract class Command {
+  protected readonly config: IConfig;
+
+  constructor(config: IConfig) {
+    this.config = config;
+  }
+
+  abstract executeCommand(command: string): Promise<void>;
 }

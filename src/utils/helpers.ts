@@ -1,8 +1,6 @@
 import ora from 'ora';
 import { exec } from 'child_process';
 import chalk from 'chalk';
-import fs from 'fs';
-import path from 'path';
 
 export const exFunction = async <T>(
   fn: () => Promise<T>,
