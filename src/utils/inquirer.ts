@@ -60,3 +60,26 @@ export const askUpdatePackage = async (): Promise<boolean> => {
   ]);
   return updatePackage === 'Yes';
 };
+
+export const askRetryRefactor = async (): Promise<boolean> => {
+  const { refactor } = await inquirer.prompt<{ refactor: 'Yes' | 'No' }>([
+    {
+      type: 'list',
+      name: 'refactor',
+      message: `🔁 Retry refactor?`,
+      choices: ['Yes', 'No'],
+    },
+  ]);
+  return refactor === 'Yes';
+};
+
+export const inputRefactor = async (): Promise<string> => {
+  const { refactor } = await inquirer.prompt<{ refactor: string }>([
+    {
+      type: 'input',
+      name: 'refactor',
+      message: '🎯 Input your refactor plan:',
+    },
+  ]);
+  return refactor;
+};

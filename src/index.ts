@@ -4,7 +4,7 @@ import { Command } from 'commander';
 import os from 'os';
 import { getConfig, setConfig } from './config/config';
 import { askGoal, askOpenAIKey } from './utils';
-import { CommandService } from './services/commands.services';
+import { CommandService } from './commands';
 import axios, { AxiosError } from 'axios';
 import chalk from 'chalk';
 import { checkNodeVersion } from './utils/helpers';
