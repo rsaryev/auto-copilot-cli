@@ -8,9 +8,37 @@
 
 
 
+<details>
+  <summary>Demo</summary>
 
-[Usage](https://github.com/rsaryev/auto-copilot-cli/assets/70219513/91221d9f-d894-4ed7-a035-5413267ec051)
+https://github.com/rsaryev/auto-copilot-cli/assets/70219513/91221d9f-d894-4ed7-a035-5413267ec051
 
+</details>
+
+<details>
+  <summary>Usage</summary>
+
+```bash
+# Refactor code
+$ copilot -r <file>
+
+# Rename all files in the current directory to lowercase
+$ copilot "rename files in the current directory to lowercase"
+
+# Convert all images in the current directory to size 100x100
+$ copilot "convert all images in the current directory to size 100x100"
+
+# Create a file with implementation of binary search
+$ copilot "create a file with implementation of binary search"
+
+# Create a simple web server in Node.js using Koajs
+$ copilot "create a simple web server in Node.js using Koajs"
+
+# Start PostgreSQL in Docker
+$ copilot "start PostgreSQL in Docker"
+```
+
+</details>
 
 
 ## Description
@@ -44,25 +72,3 @@ curl -s https://raw.githubusercontent.com/rsaryev/auto-copilot-cli/main/deployme
 - ```-m, --model <modelName>``` - OpenAI model name (default: "gpt-3.5-turbo")
 - ```-k, --openai-api-key <key>``` - OpenAI API key ([Get OpenAI API key](https://beta.openai.com/))
 - ```-e, --editor <editor>``` - Editor to open files (default: "code")
-
-## Usage
-
-```bash
-# Refactor code
-$ copilot -r <file>
-
-# Rename all files in the current directory to lowercase
-$ copilot "rename files in the current directory to lowercase"
-
-# Convert all images in the current directory to size 100x100
-$ copilot "convert all images in the current directory to size 100x100"
-
-# Create a file with implementation of binary search
-$ copilot "create a file with implementation of binary search"
-
-# Create a simple web server in Node.js using Koajs
-$ copilot "create a simple web server in Node.js using Koajs"
-
-# Start PostgreSQL in Docker
-$ copilot "start PostgreSQL in Docker"
-```
