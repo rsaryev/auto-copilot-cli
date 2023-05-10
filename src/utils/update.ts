@@ -17,7 +17,7 @@ export async function checkUpdate() {
     if (latestVersionNumber > version) {
       spinner.fail(
         chalk.yellow(
-          `Please update ${name} manually by running: npm i -g ${name}`,
+          `Please update ${name} manually by running: npm update -g ${name}`,
         ),
       );
     } else {
