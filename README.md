@@ -12,7 +12,11 @@
 <details>
   <summary>Click to view demo</summary>
 
-https://github.com/rsaryev/auto-copilot-cli/assets/70219513/91221d9f-d894-4ed7-a035-5413267ec051
+
+
+https://github.com/rsaryev/auto-copilot-cli/assets/70219513/67be5d86-295d-4b1b-b470-948b24fc1510
+
+
 
 </details>
 
