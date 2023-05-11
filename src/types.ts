@@ -21,6 +21,14 @@ export interface IRefactorParams {
   handleLLMError: (e: any) => void;
 }
 
+export interface IChatParams {
+  input: string;
+  prompt?: string;
+  handleLLMNewToken: (token: string) => void;
+  handleLLMStart: () => void;
+  handleLLMEnd: () => void;
+  handleLLMError: (e: Error) => void;
+}
 export abstract class Command {
   protected readonly config: IConfig;
 

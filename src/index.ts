@@ -25,8 +25,9 @@ program
   .option('-k, --openai-api-key <key>', 'Set OpenAI API key')
   .option('-e, --editor <editor>', 'Set editor to open files')
   .option('-r, --refactor <file>', 'Refactor code beta')
-  .option('-p, --prompt <prompt>', 'Prompt to refactor code')
+  .option('-p, --prompt <prompt>', 'Prompt for AI')
   .option('-b, --base-url <url>', 'Set OpenAI base url')
+  .option('-c, --chat', 'chat with AI')
   .version(version)
   .action(commandAction)
   .parse(process.argv);
@@ -39,6 +40,7 @@ async function commandAction(args: {
   refactor: string;
   prompt: string;
   baseUrl: string;
+  chat: string;
 }) {
   checkNodeVersion();
   await checkUpdate();
@@ -70,6 +72,10 @@ async function commandAction(args: {
   }
 
   try {
+    if (args.chat) {
+      await service.chat(args.chat, args.prompt);
+      process.exit(0);
+    }
     if (args.refactor) {
       await service.refactor(args.refactor, args.prompt);
       process.exit(0);

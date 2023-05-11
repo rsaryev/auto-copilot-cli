@@ -26,6 +26,12 @@ https://github.com/rsaryev/auto-copilot-cli/assets/70219513/67be5d86-295d-4b1b-b
   <summary>Click to view usage</summary>
 
 ```bash
+# Chat with AI with prompt
+$ copilot -c --prompt "You are a web developer"
+
+# Chat with AI without prompt
+$ copilot -c
+
 # Refactor code
 $ copilot -r <file>
 
@@ -74,7 +80,8 @@ curl -s https://raw.githubusercontent.com/rsaryev/auto-copilot-cli/main/deployme
 ### Options
 
 - ```-r, --refactor <file>``` - refactor code
-- ```-p, --prompt <prompt>``` - prompt to refactor code
+- ```-c, --chat``` - chat with AI
+- ```-p, --prompt <prompt>``` - optional prompt for chat and refactor
 - ```-h, --help``` - display help for command
 - ```-V, --version``` - output the version number
 

@@ -69,3 +69,14 @@ export const inputRefactor = async (): Promise<string> => {
   ]);
   return refactor;
 };
+
+export const inputAsk = async (): Promise<string> => {
+  const { ask } = await inquirer.prompt<{ ask: string }>([
+    {
+      type: 'input',
+      name: 'ask',
+      message: '👉',
+    },
+  ]);
+  return ask;
+};

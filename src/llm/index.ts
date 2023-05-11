@@ -2,10 +2,16 @@ import { PromptTemplate } from 'langchain/prompts';
 import { z } from 'zod';
 import * as os from 'os';
 import { StructuredOutputParser } from 'langchain/output_parsers';
-import { IConfig, IRefactorParams, ShellScriptResponse } from '../types';
-import { OpenAI } from 'langchain/llms/openai';
+import {
+  IChatParams,
+  IConfig,
+  IRefactorParams,
+  ShellScriptResponse,
+} from '../types';
+import { OpenAI, OpenAIChat } from 'langchain/llms/openai';
 import fs from 'fs';
 import { throwLLMParseError } from '../utils/error';
+import { ChatCompletionRequestMessage } from 'openai';
 
 export class LLMCommand {
   protected llm: OpenAI;
@@ -154,5 +160,65 @@ The content: {content}
     },
   ): Promise<void> {
     return new LLMCode(params.config).refactor(params);
+  }
+}
+
+export class LLMChat extends LLMCommand {
+  private llmChat: OpenAIChat;
+  static messages: ChatCompletionRequestMessage[] = [];
+  constructor(config: IConfig) {
+    super(config, 1024, false);
+    this.llmChat = new OpenAIChat({
+      prefixMessages: LLMChat.messages,
+      modelName: config.MODEL,
+      maxTokens: 256,
+      temperature: 0,
+      openAIApiKey: config.OPENAI_API_KEY,
+      streaming: true,
+    });
+  }
+
+  async chat({
+    input,
+    prompt,
+    handleLLMNewToken,
+    handleLLMStart,
+    handleLLMEnd,
+    handleLLMError,
+  }: IChatParams): Promise<void> {
+    const message = LLMChat.messages;
+    if (message.length === 0) {
+      message.push({
+        role: 'system',
+        content:
+          prompt ||
+          'You are a helpful assistant that answers in language understandable to humans.',
+      });
+    }
+    const answer = await this.llmChat.call(input, undefined, [
+      {
+        handleLLMNewToken,
+        handleLLMStart,
+        handleLLMEnd,
+        handleLLMError,
+      },
+    ]);
+    message.push({
+      role: 'user',
+      content: input,
+    });
+
+    message.push({
+      role: 'assistant',
+      content: answer,
+    });
+  }
+
+  static async chat(
+    params: IChatParams & {
+      config: IConfig;
+    },
+  ): Promise<void> {
+    return new LLMChat(params.config).chat(params);
   }
 }
