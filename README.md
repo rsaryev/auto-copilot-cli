@@ -10,13 +10,23 @@
 ## Demo
 
 <details>
-  <summary>Click to view demo</summary>
+  <summary>Refactor</summary>
 
+https://github.com/rsaryev/auto-copilot-cli/assets/70219513/cfe93a60-f214-4125-a2bf-80fac6d9b25d
 
+</details>
 
-https://github.com/rsaryev/auto-copilot-cli/assets/70219513/67be5d86-295d-4b1b-b470-948b24fc1510
+<details>
+  <summary>CLI</summary>
 
+https://github.com/rsaryev/auto-copilot-cli/assets/70219513/3b6d7d7c-cd07-485b-8ee7-29649788a06f
 
+</details>
+
+<details>
+  <summary>Chat</summary>
+
+https://github.com/rsaryev/auto-copilot-cli/assets/70219513/c02a2918-f4b8-46e6-8fb7-88636a71f81b
 
 </details>
 
