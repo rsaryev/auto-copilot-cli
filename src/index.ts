@@ -26,6 +26,7 @@ program
   .option('-e, --editor <editor>', 'Set editor to open files')
   .option('-r, --refactor <file>', 'Refactor code beta')
   .option('-p, --prompt <prompt>', 'Prompt to refactor code')
+  .option('-b, --base-url <url>', 'Set OpenAI base url')
   .version(version)
   .action(commandAction)
   .parse(process.argv);
@@ -37,6 +38,7 @@ async function commandAction(args: {
   editor: string;
   refactor: string;
   prompt: string;
+  baseUrl: string;
 }) {
   checkNodeVersion();
   await checkUpdate();
@@ -57,6 +59,12 @@ async function commandAction(args: {
 
   if (args.editor) {
     config.EDITOR = args.editor;
+    setConfig(config);
+    process.exit(0);
+  }
+
+  if (args.baseUrl) {
+    config.OPEN_AI_BASE_URL = args.baseUrl;
     setConfig(config);
     process.exit(0);
   }

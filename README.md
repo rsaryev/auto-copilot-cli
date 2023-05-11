@@ -83,3 +83,4 @@ curl -s https://raw.githubusercontent.com/rsaryev/auto-copilot-cli/main/deployme
 - ```-m, --model <modelName>``` - OpenAI model name (default: "gpt-3.5-turbo")
 - ```-k, --openai-api-key <key>``` - OpenAI API key ([Get OpenAI API key](https://beta.openai.com/))
 - ```-e, --editor <editor>``` - Editor to open files (default: "code")
+- ```-b, --base-url <url>``` - Set OpenAI base url (default: "https://api.openai.com/v1")

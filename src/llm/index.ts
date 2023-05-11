@@ -2,56 +2,54 @@ import { PromptTemplate } from 'langchain/prompts';
 import { z } from 'zod';
 import * as os from 'os';
 import { StructuredOutputParser } from 'langchain/output_parsers';
-import { IConfig, IRefactorParams, ShellScript } from '../types';
+import { IConfig, IRefactorParams, ShellScriptResponse } from '../types';
 import { OpenAI } from 'langchain/llms/openai';
 import fs from 'fs';
 import { throwLLMParseError } from '../utils/error';
 
-export class LLMGenerateShell {
-  private llm: OpenAI;
+export class LLMCommand {
+  protected llm: OpenAI;
+
+  constructor(config: IConfig, maxTokens: number, streaming: boolean) {
+    this.llm = new OpenAI(
+      {
+        modelName: config.MODEL,
+        maxTokens,
+        temperature: 0,
+        openAIApiKey: config.OPENAI_API_KEY,
+        streaming,
+      },
+      {
+        basePath: config.OPEN_AI_BASE_URL,
+      },
+    );
+  }
+}
+
+export class LLMGenerateShell extends LLMCommand {
   constructor(config: IConfig) {
-    this.llm = new OpenAI({
-      modelName: config.MODEL,
-      maxTokens: 1024,
-      temperature: 0,
-      openAIApiKey: config.OPENAI_API_KEY,
-      streaming: false,
-    });
+    super(config, 1024, false);
   }
 
-  async wrappedParse<T>(
-    parser: StructuredOutputParser<any>,
-    response: string,
-  ): Promise<T> {
-    try {
-      return parser.parse(response);
-    } catch (error) {
-      return throwLLMParseError();
-    }
-  }
-
-  async generateShell(prompt: string): Promise<ShellScript> {
+  async generateShell(prompt: string): Promise<ShellScriptResponse> {
     const parser = StructuredOutputParser.fromZodSchema(
       z.object({
-        shell_script: z.string().describe(`shell script with comments`),
-        dangerous: z
+        shellScript: z.string().describe(`shell script with comments`),
+        isDangerous: z
           .boolean()
           .describe(
             `if the shell is very dangerous, it will be marked as dangerous`,
           ),
         description: z.string().describe(`short description`),
-        error: z.string().describe(`short error`),
       }),
     );
-
-    const formatInstructions = parser.getFormatInstructions();
 
     const promptTemplate = new PromptTemplate({
       template: `
 Goal: Write the best shell script based on the prompt: \`{prompt}\`
 
 Constraints:
-- The script should be compatible with the specified environment {os}.
+- The script should be compatible with the {os}.
 - The script should run without any user assistance.
 - Every step should be printed to the console so that the user can understand what is happening.
 - Check the installed packages and install the missing packages if necessary.
@@ -64,42 +62,39 @@ Answer:
 - Only valid, otherwise the answer will be rejected.
 
 {format_instructions}
-The current time and date is ${new Date().toLocaleString()}
+The current time and date is {date}
 The current working directory is {workdir}
 `,
       inputVariables: ['prompt', 'os', 'date', 'workdir'],
-      partialVariables: { format_instructions: formatInstructions },
+      partialVariables: { format_instructions: parser.getFormatInstructions() },
     });
 
     const input = await promptTemplate.format({
-      prompt: prompt,
+      prompt,
       os: os.platform(),
-      date: new Date().toISOString(),
+      date: new Date().toLocaleString(),
       workdir: process.cwd(),
     });
 
     const response = await this.llm.call(input);
-    return this.wrappedParse(parser, response);
+    try {
+      return parser.parse(response);
+    } catch (error) {
+      return throwLLMParseError();
+    }
   }
 
   static async generateShell(
     config: IConfig,
     prompt: string,
-  ): Promise<ShellScript> {
+  ): Promise<ShellScriptResponse> {
     return new LLMGenerateShell(config).generateShell(prompt);
   }
 }
 
-export class LLMCode {
-  private llm: OpenAI;
+export class LLMCode extends LLMCommand {
   constructor(config: IConfig) {
-    this.llm = new OpenAI({
-      modelName: config.MODEL,
-      maxTokens: 2056,
-      temperature: 0,
-      openAIApiKey: config.OPENAI_API_KEY,
-      streaming: true,
-    });
+    super(config, 2056, true);
   }
 
   async refactor({
@@ -112,7 +107,6 @@ export class LLMCode {
   }: IRefactorParams): Promise<void> {
     const promptTemplate = new PromptTemplate({
       template: `Refactor and fix the following content
-
 Constraints:
 - If this is code in a programming language, it must be formatted according to the standard for that programming language and run without errors.
 

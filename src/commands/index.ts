@@ -1,6 +1,6 @@
 import { IConfig } from '../types';
-import { Refactor } from './refactor';
-import { Shell } from './shell';
+import { RefactorCommand } from './refactor';
+import { ShellCommand } from './shell';
 
 export class CommandService {
   private readonly config: IConfig;
@@ -10,10 +10,12 @@ export class CommandService {
   }
 
   public async refactor(filePath: string, prompt?: string): Promise<void> {
-    return new Refactor(this.config).executeCommand(filePath, prompt);
+    const refactorCommand = new RefactorCommand(this.config);
+    await refactorCommand.execute(filePath, prompt);
   }
 
   public async shell(goal: string): Promise<void> {
-    return new Shell(this.config).executeCommand(goal);
+    const shellCommand = new ShellCommand(this.config);
+    await shellCommand.execute(goal);
   }
 }

@@ -3,13 +3,13 @@ export interface IConfig {
   TEMPERATURE: number;
   MODEL: string;
   EDITOR: string;
+  OPEN_AI_BASE_URL: string;
 }
 
-export interface ShellScript {
-  shell_script: string;
-  dangerous: boolean;
+export interface ShellScriptResponse {
+  shellScript: string;
+  isDangerous: boolean;
   description: string;
-  error: string;
 }
 
 export interface IRefactorParams {
@@ -28,5 +28,5 @@ export abstract class Command {
     this.config = config;
   }
 
-  abstract executeCommand(command: string): Promise<void>;
+  abstract execute(command: string): Promise<void>;
 }

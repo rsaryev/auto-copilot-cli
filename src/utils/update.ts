@@ -1,9 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import { askUpdatePackage } from './inquirer';
 import ora from 'ora';
 import chalk from 'chalk';
-import { exec } from 'child_process';
 
 export async function checkUpdate() {
   const { version, name } = JSON.parse(

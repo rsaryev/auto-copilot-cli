@@ -47,20 +47,6 @@ export const askOpenAIKey = async (): Promise<string> => {
   return openAIKey;
 };
 
-export const askUpdatePackage = async (): Promise<boolean> => {
-  const { updatePackage } = await inquirer.prompt<{
-    updatePackage: 'Yes' | 'No';
-  }>([
-    {
-      type: 'list',
-      name: 'updatePackage',
-      message: `🚀 Update package?`,
-      choices: ['Yes', 'No'],
-    },
-  ]);
-  return updatePackage === 'Yes';
-};
-
 export const askRetryRefactor = async (): Promise<boolean> => {
   const { refactor } = await inquirer.prompt<{ refactor: 'Yes' | 'No' }>([
     {
