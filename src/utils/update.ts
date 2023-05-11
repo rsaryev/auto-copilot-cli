@@ -2,6 +2,7 @@ import ora from 'ora';
 import { exec } from 'child_process';
 import semver from 'semver';
 import chalk from 'chalk';
+// @ts-ignore
 import { version, name } from '../../package.json';
 import { promisify } from 'util';
 
@@ -14,7 +15,7 @@ export async function checkUpdate() {
     spinner.fail(chalk.yellow('Could not check for updates'));
     return;
   }
-  if (semver.eq(latestVersion, version)) {
+  if (semver.gt(latestVersion, version)) {
     spinner.fail(
       chalk.yellow(`Please update ${name} to the latest version: ${chalk.blue('npm i -g auto-copilot-cli')}`),
     );

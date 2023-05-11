@@ -7,65 +7,6 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-blue)](https://github.com/transitive-bullshit/chatgpt-api/blob/main/license)
 [![auto-copilot-cli npm downloads](https://img.shields.io/npm/dt/auto-copilot-cli)](https://www.npmjs.com/package/auto-copilot-cli)
 
-## Demo
-
-<details>
-  <summary>Refactor</summary>
-
-https://github.com/rsaryev/auto-copilot-cli/assets/70219513/cfe93a60-f214-4125-a2bf-80fac6d9b25d
-
-</details>
-
-<details>
-  <summary>CLI</summary>
-
-https://github.com/rsaryev/auto-copilot-cli/assets/70219513/3b6d7d7c-cd07-485b-8ee7-29649788a06f
-
-</details>
-
-<details>
-  <summary>Chat</summary>
-
-https://github.com/rsaryev/auto-copilot-cli/assets/70219513/c02a2918-f4b8-46e6-8fb7-88636a71f81b
-
-</details>
-
-## Usage
-
-<details>
-  <summary>Click to view usage</summary>
-
-```bash
-# Chat with AI with prompt
-$ copilot -c --prompt "You are a web developer"
-
-# Chat with AI without prompt
-$ copilot -c
-
-# Refactor code
-$ copilot -r <file>
-
-# Refactor code with prompt
-$ copilot -r ./server.js -p "transform server.js to use typescript"
-
-# Rename all files in the current directory to lowercase
-$ copilot "rename files in the current directory to lowercase"
-
-# Convert all images in the current directory to size 100x100
-$ copilot "convert all images in the current directory to size 100x100"
-
-# Create a file with implementation of binary search
-$ copilot "create a js file with implementation of binary search"
-
-# Create a simple web server in Node.js using Koajs
-$ copilot "create a simple web server in Node.js using Koajs"
-
-# Start PostgreSQL in Docker
-$ copilot "start PostgreSQL in Docker"
-```
-
-</details>
-
 ## Description
 
 Auto Copilot is a powerful and useful tool for developers that uses OpenAI models to translate natural language into commands, scripts, refactoring code and more that will help you achieve your goal as safely as possible.
@@ -101,3 +42,66 @@ curl -s https://raw.githubusercontent.com/rsaryev/auto-copilot-cli/main/deployme
 - `-k, --openai-api-key <key>` - OpenAI API key ([Get OpenAI API key](https://beta.openai.com/))
 - `-e, --editor <editor>` - Editor to open files (default: "code")
 - `-b, --base-url <url>` - Set OpenAI base url (default: "https://api.openai.com/v1")
+
+## Usage
+
+<details>
+  <summary>Refactor</summary>
+
+- If you need to use a prompt, use `-p` or `--prompt` option
+
+Example:
+```bash
+# Refactor code
+$ copilot -r <file>
+
+# Refactor code with prompt
+$ copilot -r ./server.js -p "transform server.js to use typescript"
+```
+
+https://github.com/rsaryev/auto-copilot-cli/assets/70219513/cfe93a60-f214-4125-a2bf-80fac6d9b25d.png
+
+</details>
+
+<details>
+  <summary>CLI</summary>
+
+```bash
+# Rename all files in the current directory to lowercase
+$ copilot "rename files in the current directory to lowercase"
+
+# Convert all images in the current directory to size 100x100
+$ copilot "convert all images in the current directory to size 100x100"
+
+# Create a file with implementation of binary search
+$ copilot "create a js file with implementation of binary search"
+
+# Create a simple web server in Node.js using Koajs
+$ copilot "create a simple web server in Node.js using Koajs"
+
+# Start PostgreSQL in Docker
+$ copilot "start PostgreSQL in Docker"
+```
+
+https://github.com/rsaryev/auto-copilot-cli/assets/70219513/3b6d7d7c-cd07-485b-8ee7-29649788a06f.png
+
+</details>
+
+<details>
+  <summary>Chat</summary>
+
+- If you need to clear the history, just send an empty string in the conversation
+- If you need to use a prompt, use `-p` or `--prompt` option
+
+Example:
+```bash
+# Chat with AI with prompt
+$ copilot -c --prompt "You are a web developer"
+
+# Chat with AI without prompt
+$ copilot -c
+```
+
+https://github.com/rsaryev/auto-copilot-cli/assets/70219513/c02a2918-f4b8-46e6-8fb7-88636a71f81b.png
+
+</details>
