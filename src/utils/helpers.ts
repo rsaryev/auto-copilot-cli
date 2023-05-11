@@ -2,11 +2,7 @@ import ora from 'ora';
 import { exec } from 'child_process';
 import chalk from 'chalk';
 
-export const exFunction = async <T>(
-  fn: () => Promise<T>,
-  message: string,
-  successMessage: string,
-): Promise<T> => {
+export const exFunction = async <T>(fn: () => Promise<T>, message: string, successMessage: string): Promise<T> => {
   const spinner = ora(message).start();
   try {
     const result = await fn();
@@ -38,11 +34,7 @@ export function executeCommand(command: string) {
 export function checkNodeVersion() {
   const nodeVersion = process.versions.node.split('.')[0];
   if (Number(nodeVersion) < 18) {
-    console.log(
-      `${chalk.red(
-        '✘',
-      )} Please update your node version to 18 or above\nCurrent version: ${nodeVersion}`,
-    );
+    console.log(`${chalk.red('✘')} Please update your node version to 18 or above\nCurrent version: ${nodeVersion}`);
     process.exit(1);
   }
 }

@@ -89,15 +89,15 @@ curl -s https://raw.githubusercontent.com/rsaryev/auto-copilot-cli/main/deployme
 
 ### Options
 
-- ```-r, --refactor <file>``` - refactor code
-- ```-c, --chat``` - chat with AI
-- ```-p, --prompt <prompt>``` - optional prompt for chat and refactor
-- ```-h, --help``` - display help for command
-- ```-V, --version``` - output the version number
+- `-r, --refactor <file>` - refactor code
+- `-с, --chat <message>` - chat with AI if you need to clear the history, just send an empty string in the conversation
+- `-p, --prompt <prompt>` - optional prompt for chat and refactor
+- `-h, --help` - display help for command
+- `-V, --version` - output the version number
 
 ### Configuration
 
-- ```-m, --model <modelName>``` - OpenAI model name (default: "gpt-3.5-turbo")
-- ```-k, --openai-api-key <key>``` - OpenAI API key ([Get OpenAI API key](https://beta.openai.com/))
-- ```-e, --editor <editor>``` - Editor to open files (default: "code")
-- ```-b, --base-url <url>``` - Set OpenAI base url (default: "https://api.openai.com/v1")
+- `-m, --model <modelName>` - OpenAI model name (default: "gpt-3.5-turbo")
+- `-k, --openai-api-key <key>` - OpenAI API key ([Get OpenAI API key](https://beta.openai.com/))
+- `-e, --editor <editor>` - Editor to open files (default: "code")
+- `-b, --base-url <url>` - Set OpenAI base url (default: "https://api.openai.com/v1")

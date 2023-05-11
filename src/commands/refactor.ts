@@ -7,11 +7,7 @@ import ora from 'ora';
 import { LLMCode } from '../llm';
 
 export class RefactorCommand extends Command {
-  public async execute(
-    filePath: string,
-    prompt?: string,
-    outputFilePath?: string,
-  ): Promise<void> {
+  public async execute(filePath: string, prompt?: string, outputFilePath?: string): Promise<void> {
     if (!fs.existsSync(filePath)) {
       console.error(`${chalk.red('✘')} no such file or directory: ${filePath}`);
       return;
@@ -23,9 +19,7 @@ export class RefactorCommand extends Command {
       return;
     }
 
-    const outputPath =
-      outputFilePath ||
-      filePath.replace(`.${fileType}`, `.refactored.${fileType}`);
+    const outputPath = outputFilePath || filePath.replace(`.${fileType}`, `.refactored.${fileType}`);
 
     const questionOpenCode = await askOpenEditor();
     if (questionOpenCode) {

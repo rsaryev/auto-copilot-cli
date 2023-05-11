@@ -2,12 +2,7 @@ import { PromptTemplate } from 'langchain/prompts';
 import { z } from 'zod';
 import * as os from 'os';
 import { StructuredOutputParser } from 'langchain/output_parsers';
-import {
-  IChatParams,
-  IConfig,
-  IRefactorParams,
-  ShellScriptResponse,
-} from '../types';
+import { IChatParams, IConfig, IRefactorParams, ShellScriptResponse } from '../types';
 import { OpenAI, OpenAIChat } from 'langchain/llms/openai';
 import fs from 'fs';
 import { throwLLMParseError } from '../utils/error';
@@ -41,11 +36,7 @@ export class LLMGenerateShell extends LLMCommand {
     const parser = StructuredOutputParser.fromZodSchema(
       z.object({
         shellScript: z.string().describe(`shell script with comments`),
-        isDangerous: z
-          .boolean()
-          .describe(
-            `if the shell is very dangerous, it will be marked as dangerous`,
-          ),
+        isDangerous: z.boolean().describe(`if the shell is very dangerous, it will be marked as dangerous`),
         description: z.string().describe(`short description`),
       }),
     );
@@ -90,10 +81,7 @@ The current working directory is {workdir}
     }
   }
 
-  static async generateShell(
-    config: IConfig,
-    prompt: string,
-  ): Promise<ShellScriptResponse> {
+  static async generateShell(config: IConfig, prompt: string): Promise<ShellScriptResponse> {
     return new LLMGenerateShell(config).generateShell(prompt);
   }
 }
@@ -186,15 +174,20 @@ export class LLMChat extends LLMCommand {
     handleLLMEnd,
     handleLLMError,
   }: IChatParams): Promise<void> {
-    const message = LLMChat.messages;
-    if (message.length === 0) {
-      message.push({
+    const messages = LLMChat.messages;
+    if (input === '') {
+      LLMChat.messages = [];
+      handleLLMStart();
+      handleLLMNewToken('Chat history cleared');
+      return handleLLMEnd();
+    }
+    if (messages.length === 0) {
+      messages.push({
         role: 'system',
-        content:
-          prompt ||
-          'You are a helpful assistant that answers in language understandable to humans.',
+        content: prompt || 'You are a helpful assistant that answers in language understandable to humans.',
       });
     }
+
     const answer = await this.llmChat.call(input, undefined, [
       {
         handleLLMNewToken,
@@ -203,12 +196,12 @@ export class LLMChat extends LLMCommand {
         handleLLMError,
       },
     ]);
-    message.push({
+    messages.push({
       role: 'user',
       content: input,
     });
 
-    message.push({
+    messages.push({
       role: 'assistant',
       content: answer,
     });

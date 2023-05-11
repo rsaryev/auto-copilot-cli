@@ -1,27 +1,108 @@
-import { IConfig } from '../types';
+import { ICommandArgs, IConfig } from '../types';
+import { askGoal, askOpenAIKey } from '../utils';
+import { Command } from 'commander';
+import { getConfig, setConfig } from '../config/config';
+import axios, { AxiosError } from 'axios';
+import chalk from 'chalk';
+import { checkUpdate } from '../utils/update';
+import { ChatCommand } from './chat';
 import { RefactorCommand } from './refactor';
 import { ShellCommand } from './shell';
-import { ChatCommand } from './chat';
+import { checkNodeVersion } from '../utils/helpers';
 
-export class CommandService {
-  private readonly config: IConfig;
+class CommandHandler {
+  private readonly handlers: ((args: ICommandArgs, program: Command) => Promise<void>)[];
 
-  constructor(config: IConfig) {
+  constructor(private readonly config: IConfig) {
+    this.handlers = [
+      this.handleOpenAPIKeyOption,
+      this.handleModelOption,
+      this.handleEditorOption,
+      this.handleBaseUrlOption,
+      this.handleChatOption,
+      this.handleRefactorOption,
+      this.handleShellOption,
+    ];
     this.config = config;
   }
 
-  public async refactor(filePath: string, prompt?: string): Promise<void> {
-    const refactorCommand = new RefactorCommand(this.config);
-    await refactorCommand.execute(filePath, prompt);
+  public async handleOpenAPIKeyOption(args: ICommandArgs): Promise<void> {
+    if (args.openaiApiKey) {
+      this.config.OPENAI_API_KEY = args.openaiApiKey;
+      setConfig(this.config);
+      process.exit(0);
+    }
   }
 
-  public async shell(goal: string): Promise<void> {
+  public async handleModelOption(args: ICommandArgs): Promise<void> {
+    if (args.model) {
+      this.config.MODEL = args.model;
+      setConfig(this.config);
+      process.exit(0);
+    }
+  }
+
+  public async handleEditorOption(args: ICommandArgs): Promise<void> {
+    if (args.editor) {
+      this.config.EDITOR = args.editor;
+      setConfig(this.config);
+      process.exit(0);
+    }
+  }
+
+  public async handleBaseUrlOption(args: ICommandArgs): Promise<void> {
+    if (args.baseUrl) {
+      this.config.OPEN_AI_BASE_URL = args.baseUrl;
+      setConfig(this.config);
+      process.exit(0);
+    }
+  }
+
+  public async handleChatOption(args: ICommandArgs): Promise<void> {
+    if (args.chat) {
+      const chatCommand = new ChatCommand(this.config);
+      await chatCommand.execute(args.chat, args.prompt);
+      process.exit(0);
+    }
+  }
+
+  public async handleRefactorOption(args: ICommandArgs): Promise<void> {
+    if (args.refactor) {
+      const refactorCommand = new RefactorCommand(this.config);
+      await refactorCommand.execute(args.refactor, args.prompt);
+      process.exit(0);
+    }
+  }
+
+  public async handleShellOption(args: ICommandArgs, program: Command): Promise<void> {
+    const goal = program.args.join(' ').trim() || (await askGoal());
     const shellCommand = new ShellCommand(this.config);
     await shellCommand.execute(goal);
+    process.exit(0);
   }
+  public async handleCommandAction(args: ICommandArgs, program: Command): Promise<void> {
+    try {
+      checkNodeVersion();
+      await checkUpdate();
+      for (const handler of this.handlers) {
+        await handler.call(this, args, program);
+      }
+    } catch (error: any) {
+      if (axios.isAxiosError(error)) {
+        if ((error as AxiosError).response?.status === 401) {
+          this.config.OPENAI_API_KEY = await askOpenAIKey();
+          setConfig(this.config);
+          await this.handleCommandAction(args, program);
+          return;
+        }
+      }
+      console.log(`${chalk.red('✘')} ${error.response?.data?.error?.message || error.message}`);
+    }
+  }
+}
 
-  public async chat(command: string, prompt: string): Promise<void> {
-    const chatCommand = new ChatCommand(this.config);
-    await chatCommand.execute(command, prompt);
-  }
+export async function handleCommandAction(args: ICommandArgs, program: Command): Promise<void> {
+  const config = getConfig();
+  const handler = new CommandHandler(config);
+  await handler.handleCommandAction(args, program);
 }

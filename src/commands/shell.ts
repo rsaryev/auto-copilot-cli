@@ -17,26 +17,17 @@ export class ShellCommand extends Command {
       'Done',
     );
     fs.writeFileSync(pathToSaveShellScript, shellScript.shellScript);
-    console.log(
-      `${shellScript.isDangerous ? chalk.red('✘') : chalk.green('✔')} Safe | ${
-        shellScript.description
-      }`,
-    );
+    console.log(`${shellScript.isDangerous ? chalk.red('✘') : chalk.green('✔')} Safe | ${shellScript.description}`);
 
     const questionOpenScript = await askOpenEditor();
 
     if (questionOpenScript) {
-      const command = `${
-        this.config.EDITOR || 'code'
-      } ${pathToSaveShellScript}`;
+      const command = `${this.config.EDITOR || 'code'} ${pathToSaveShellScript}`;
       await executeCommand(command);
     }
     const isApproved = await askExecute();
     if (isApproved) {
-      const shellScriptModified = fs.readFileSync(
-        pathToSaveShellScript,
-        'utf-8',
-      );
+      const shellScriptModified = fs.readFileSync(pathToSaveShellScript, 'utf-8');
       await executeCommand(shellScriptModified.toString());
     }
   }

@@ -40,8 +40,7 @@ export const askOpenAIKey = async (): Promise<string> => {
     {
       type: 'input',
       name: 'openAIKey',
-      message:
-        '🔑 Enter your OpenAI API key. You can get your API key from https://beta.openai.com/account/api-keys:',
+      message: '🔑 Enter your OpenAI API key. You can get your API key from https://beta.openai.com/account/api-keys:',
     },
   ]);
   return openAIKey;

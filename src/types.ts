@@ -38,3 +38,14 @@ export abstract class Command {
 
   abstract execute(command: string): Promise<void>;
 }
+
+export interface ICommandArgs {
+  autoExecute: boolean;
+  model: string;
+  openaiApiKey: string;
+  editor: string;
+  refactor: string;
+  prompt: string;
+  baseUrl: string;
+  chat: string;
+}
