@@ -124,4 +124,8 @@ $ copilot --exec "docker ls"
 $ copilot --exec "docker ps"
 ```
 
+
+https://github.com/rsaryev/auto-copilot-cli/assets/70219513/735675ed-356c-4569-a559-58a129ed10c0
+
+
 </details>
