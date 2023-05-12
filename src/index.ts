@@ -17,6 +17,7 @@ program
   .option('-p, --prompt <prompt>', 'Prompt for AI')
   .option('-b, --base-url <url>', 'Set OpenAI base url')
   .option('-c, --chat', 'chat with AI')
+  .option('--exec <command>', 'Execute a command and analyze it for errors')
   .version(version)
   .action((args: ICommandArgs) => handleCommandAction(args, program))
   .parse(process.argv);

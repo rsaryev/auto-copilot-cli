@@ -9,6 +9,7 @@ import { ChatCommand } from './chat';
 import { RefactorCommand } from './refactor';
 import { ShellCommand } from './shell';
 import { checkNodeVersion } from '../utils/helpers';
+import { AnalyzeCommand } from './analyze';
 
 class CommandHandler {
   private readonly handlers: ((args: ICommandArgs, program: Command) => Promise<void>)[];
@@ -21,6 +22,7 @@ class CommandHandler {
       this.handleBaseUrlOption,
       this.handleChatOption,
       this.handleRefactorOption,
+      this.handleAnalyzeOption,
       this.handleShellOption,
     ];
     this.config = config;
@@ -30,7 +32,6 @@ class CommandHandler {
     if (args.openaiApiKey) {
       this.config.OPENAI_API_KEY = args.openaiApiKey;
       setConfig(this.config);
-      process.exit(0);
     }
   }
 
@@ -38,7 +39,6 @@ class CommandHandler {
     if (args.model) {
       this.config.MODEL = args.model;
       setConfig(this.config);
-      process.exit(0);
     }
   }
 
@@ -46,7 +46,6 @@ class CommandHandler {
     if (args.editor) {
       this.config.EDITOR = args.editor;
       setConfig(this.config);
-      process.exit(0);
     }
   }
 
@@ -54,7 +53,6 @@ class CommandHandler {
     if (args.baseUrl) {
       this.config.OPEN_AI_BASE_URL = args.baseUrl;
       setConfig(this.config);
-      process.exit(0);
     }
   }
 
@@ -62,7 +60,6 @@ class CommandHandler {
     if (args.chat) {
       const chatCommand = new ChatCommand(this.config);
       await chatCommand.execute(args.chat, args.prompt);
-      process.exit(0);
     }
   }
 
@@ -70,15 +67,22 @@ class CommandHandler {
     if (args.refactor) {
       const refactorCommand = new RefactorCommand(this.config);
       await refactorCommand.execute(args.refactor, args.prompt);
-      process.exit(0);
     }
   }
 
   public async handleShellOption(args: ICommandArgs, program: Command): Promise<void> {
-    const goal = program.args.join(' ').trim() || (await askGoal());
-    const shellCommand = new ShellCommand(this.config);
-    await shellCommand.execute(goal);
-    process.exit(0);
+    if (program.args.length > 0) {
+      const goal = program.args.join(' ').trim() || (await askGoal());
+      const shellCommand = new ShellCommand(this.config);
+      await shellCommand.execute(goal);
+    }
+  }
+
+  public async handleAnalyzeOption(args: ICommandArgs): Promise<void> {
+    if (args.exec) {
+      const analyseCommand = new AnalyzeCommand(this.config);
+      await analyseCommand.execute(args.exec);
+    }
   }
   public async handleCommandAction(args: ICommandArgs, program: Command): Promise<void> {
     try {

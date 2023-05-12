@@ -9,7 +9,7 @@
 
 ## Description
 
-Auto Copilot is a powerful and useful tool for developers that uses OpenAI models to translate natural language into commands, scripts, refactoring code and more that will help you achieve your goal as safely as possible.
+Auto Copilot CLI - a tool for developers that allows you to automatically refactor code, generate commands, chat with a chatbot and analyze errors using the OpenAI API.
 
 ## Installation
 
@@ -35,7 +35,7 @@ curl -s https://raw.githubusercontent.com/rsaryev/auto-copilot-cli/main/deployme
 - `-p, --prompt <prompt>` - optional prompt for chat and refactor
 - `-h, --help` - display help for command
 - `-V, --version` - output the version number
-
+- `--exec <command>` - experimental feature, analyze error message and suggest a solution
 ### Configuration
 
 - `-m, --model <modelName>` - OpenAI model name (default: "gpt-3.5-turbo")
@@ -103,5 +103,29 @@ $ copilot -c
 ```
 
 https://github.com/rsaryev/auto-copilot-cli/assets/70219513/c02a2918-f4b8-46e6-8fb7-88636a71f81b.png
+
+</details>
+
+<details>
+  <summary>Analyze</summary>
+
+- Experimental feature, analyze error message and suggest a solution
+- You can run commands, services, etc. inside the analyzer, and you will get recommendations for fixing the error
+
+Example:
+```bash
+# Invalid code in index.js returns an error and suggests a fix
+$ copilot --exec "node index.js"
+
+# Invalid command in Docker returns an error and suggests a fix
+$ copilot --exec "docker ls"
+
+# Valid command in Docker not returns an error and not suggests a fix
+$ copilot --exec "docker ps"
+```
+
+
+https://github.com/rsaryev/auto-copilot-cli/assets/70219513/735675ed-356c-4569-a559-58a129ed10c0
+
 
 </details>
