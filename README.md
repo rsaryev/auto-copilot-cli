@@ -9,7 +9,7 @@
 
 ## Description
 
-Auto Copilot is a powerful and useful tool for developers that uses OpenAI models to translate natural language into commands, scripts, refactoring code and more that will help you achieve your goal as safely as possible.
+Auto Copilot CLI - a tool for developers that allows you to automatically refactor code, generate commands, chat with a chatbot and analyze errors using the OpenAI API.
 
 ## Installation
 
