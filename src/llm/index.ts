@@ -2,7 +2,7 @@ import { PromptTemplate } from 'langchain/prompts';
 import { z } from 'zod';
 import * as os from 'os';
 import { StructuredOutputParser } from 'langchain/output_parsers';
-import { IChatParams, IConfig, IRefactorParams, ShellScriptResponse } from '../types';
+import { IAnalyseParams, IChatParams, IConfig, IRefactorParams, ShellScriptResponse } from '../types';
 import { OpenAI, OpenAIChat } from 'langchain/llms/openai';
 import fs from 'fs';
 import { throwLLMParseError } from '../utils/error';
@@ -213,5 +213,69 @@ export class LLMChat extends LLMCommand {
     },
   ): Promise<void> {
     return new LLMChat(params.config).chat(params);
+  }
+}
+
+export class LLMAnalyse extends LLMCommand {
+  constructor(config: IConfig) {
+    super(config, 256, true);
+  }
+  async analyse({
+    errorOutput,
+    command,
+    handleLLMNewToken,
+    handleLLMStart,
+    handleLLMEnd,
+    handleLLMError,
+  }: IAnalyseParams): Promise<string> {
+    const promptTemplate = new PromptTemplate({
+      template: `
+Recommendations:
+- If the error is in the code, try to fix the error in the code.
+- If the error is in the command, try to fix the command.
+- Try to use fewer tokens to avoid exceeding the limit.
+
+Format of the answer is strictly as follows:
+Description: {{description}}
+
+Suggestions for fixing the error:
+- {{fix1}}
+- {{fix2}}
+- {{fix3}}
+
+
+The current time and date is {date}
+The current working directory is {workdir}
+The current platform is {os}
+The command: {command}
+The error output: {error_output}
+`,
+      inputVariables: ['error_output', 'command', 'os', 'workdir', 'date'],
+    });
+
+    const input = await promptTemplate.format({
+      error_output: errorOutput,
+      os: os.platform(),
+      command,
+      workdir: process.cwd(),
+      date: new Date().toLocaleString(),
+    });
+
+    return this.llm.call(input, undefined, [
+      {
+        handleLLMNewToken,
+        handleLLMStart,
+        handleLLMEnd,
+        handleLLMError,
+      },
+    ]);
+  }
+
+  static async analyse(
+    params: IAnalyseParams & {
+      config: IConfig;
+    },
+  ): Promise<string> {
+    return new LLMAnalyse(params.config).analyse(params);
   }
 }

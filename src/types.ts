@@ -40,7 +40,6 @@ export abstract class Command {
 }
 
 export interface ICommandArgs {
-  autoExecute: boolean;
   model: string;
   openaiApiKey: string;
   editor: string;
@@ -48,4 +47,14 @@ export interface ICommandArgs {
   prompt: string;
   baseUrl: string;
   chat: string;
+  exec: string;
+}
+
+export interface IAnalyseParams {
+  errorOutput: string;
+  command: string;
+  handleLLMNewToken: (token: string) => void;
+  handleLLMStart?: () => void;
+  handleLLMEnd?: () => void;
+  handleLLMError?: (e: Error) => void;
 }
