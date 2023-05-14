@@ -12,6 +12,8 @@ import axios, { AxiosError } from 'axios';
 import { askOpenAIKey } from './utils';
 import chalk from 'chalk';
 import { PreCommitCommand } from './commands/pre-commit';
+import { checkNodeVersion } from './utils/helpers';
+import { checkUpdate } from './utils/update';
 
 const program: Command = new Command()
   .name('auto-copilot-cli')
@@ -168,39 +170,45 @@ const commands: ICommand[] = [
   preCommitCommand,
 ];
 
-commands.forEach(({ name, description, args, options, action }) => {
-  const command: Command = new Command(name).description(description);
-  if (args) {
-    command.arguments(args);
-  }
-  options.forEach(({ name, description, required }) => {
-    command.option(name, description, required);
+async function main() {
+  checkNodeVersion();
+  await checkUpdate();
+  commands.forEach(({ name, description, args, options, action }) => {
+    const command: Command = new Command(name).description(description);
+    if (args) {
+      command.arguments(args);
+    }
+    options.forEach(({ name, description, required }) => {
+      command.option(name, description, required);
+    });
+
+    const handler = async (...args: any[]): Promise<void> => {
+      const config: IConfig = getConfig();
+      try {
+        await action(...args);
+      } catch (error: any) {
+        if (axios.isAxiosError(error)) {
+          if ((error as AxiosError).response?.status === 401) {
+            config.OPENAI_API_KEY = await askOpenAIKey();
+            setConfig(config);
+            return handler(...args);
+          } else if ((error as AxiosError).response?.status === 429) {
+            console.log(`${chalk.red('✘')} ${chalk.yellow('You have reached your OpenAI API usage limit')}`);
+            return;
+          } else if ((error as AxiosError).response?.status === 500) {
+            console.log(`${chalk.red('✘')} ${chalk.yellow('OpenAI API is down')}`);
+            return;
+          }
+        }
+        console.log(`${chalk.red('✘')} ${error.response?.data?.error?.message || error.message}`);
+      }
+    };
+
+    command.action(handler);
+    program.addCommand(command);
   });
 
-  const handler = async (...args: any[]): Promise<void> => {
-    const config: IConfig = getConfig();
-    try {
-      await action(...args);
-    } catch (error: any) {
-      if (axios.isAxiosError(error)) {
-        if ((error as AxiosError).response?.status === 401) {
-          config.OPENAI_API_KEY = await askOpenAIKey();
-          setConfig(config);
-          return handler(...args);
-        } else if ((error as AxiosError).response?.status === 429) {
-          console.log(`${chalk.red('✘')} ${chalk.yellow('You have reached your OpenAI API usage limit')}`);
-          return;
-        } else if ((error as AxiosError).response?.status === 500) {
-          console.log(`${chalk.red('✘')} ${chalk.yellow('OpenAI API is down')}`);
-          return;
-        }
-      }
-      console.log(`${chalk.red('✘')} ${error.response?.data?.error?.message || error.message}`);
-    }
-  };
+  program.parse(process.argv);
+}
 
-  command.action(handler);
-  program.addCommand(command);
-});
-
-program.parse(process.argv);
+main();

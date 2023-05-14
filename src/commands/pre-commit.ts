@@ -17,7 +17,7 @@ export class PreCommitCommand extends Command {
       const { config } = this;
       const { stdout } = await promisify(exec)('git diff --cached');
       if (!stdout) {
-        spinner.succeed('No diff found');
+        spinner.succeed('No diff found using git add');
         return;
       }
       const commitMessage = await LLMPreCommit.preCommit({ config, diff: stdout });
@@ -25,7 +25,7 @@ export class PreCommitCommand extends Command {
       const shouldCommit = options.yes ? true : await askCommit(commitMessage);
       if (shouldCommit) {
         const spinner = ora('Committing').start();
-        await promisify(exec)(`git add . && git commit -m "${commitMessage}"`);
+        await promisify(exec)(`git commit -m "${commitMessage}"`);
         spinner.succeed('Successfully committed');
       } else {
         const shouldRetry = await askRetryCommit();
