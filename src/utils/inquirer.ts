@@ -69,6 +69,29 @@ export const inputRefactor = async (): Promise<string> => {
   return refactor;
 };
 
+export const askTest = async (): Promise<boolean> => {
+  const { test } = await inquirer.prompt<{ test: 'Yes' | 'No' }>([
+    {
+      type: 'list',
+      name: 'test',
+      message: `🔁 Retry generate tests?`,
+      choices: ['Yes', 'No'],
+    },
+  ]);
+  return test === 'Yes';
+};
+
+export const inputTest = async (): Promise<string> => {
+  const { input } = await inquirer.prompt<{ input: string }>([
+    {
+      type: 'input',
+      name: 'input',
+      message: '🎯 Input your test plan:',
+    },
+  ]);
+  return input;
+};
+
 export const inputAsk = async (): Promise<string> => {
   const { ask } = await inquirer.prompt<{ ask: string }>([
     {

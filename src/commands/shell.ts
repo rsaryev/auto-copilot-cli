@@ -3,13 +3,14 @@ import path from 'path';
 import fs from 'fs';
 import chalk from 'chalk';
 import { randomUUID } from 'crypto';
-import { tempDir } from '../index';
 import { executeCommand, exFunction } from '../utils/helpers';
 import { askExecute, askOpenEditor } from '../utils';
 import { LLMGenerateShell } from '../llm';
+import os from 'os';
 
 export class ShellCommand extends Command {
   async execute(goal: string): Promise<void> {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'auto_copilot_cli'));
     const pathToSaveShellScript = path.join(tempDir, `./${randomUUID()}.sh`);
     const shellScript = await exFunction(
       LLMGenerateShell.generateShell.bind(null, this.config, goal),

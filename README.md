@@ -9,7 +9,7 @@
 
 ## Description
 
-Auto Copilot CLI - a tool for developers that allows you to automatically refactor code, generate commands, chat with a chatbot and analyze errors using the OpenAI API.
+This is a CLI tool for generating tests, refactoring code, chatting with AI, generating and executing shell commands, and analyzing error messages.
 
 ## Installation
 
@@ -23,109 +23,139 @@ Install Script:
 curl -s https://raw.githubusercontent.com/rsaryev/auto-copilot-cli/main/deployment/deploy.bash | bash
 ```
 
-### Requirements
+### Commands
 
-- Node.js v18.16.0 or higher - [Install Node.js](https://nodejs.org/en/download/)
-- OpenAI API key - [Get OpenAI API key](https://beta.openai.com/)
+<details>
+  <summary>List of commands</summary>
+
+- `test <file>` - Generate test
+    - Options:
+        - `-p, --prompt <prompt>` - Prompt for AI
+        - `-o, --output <file>` - Output file
+- `refactor <file>` - Refactor code
+    - Options:
+        - `-p, --prompt <prompt>` - Prompt for AI
+        - `-o, --output <file>` - Output file
+- `chat <chat>` - Chat with AI
+    - Options:
+        - `-p, --prompt <prompt>` - Prompt for AI
+- `shell <goal>` - Generate and execute a shell command
+- `analyze <exec>` - Experimental feature, analyze error message and suggest a solution
+- `config <key> <value>` - Set config
+- `get-config` - Print config
 
 ### Options
 
-- `-r, --refactor <file>` - refactor code
-- `-с, --chat <message>` - chat with AI if you need to clear the history, just send an empty string in the conversation
-- `-p, --prompt <prompt>` - optional prompt for chat and refactor
 - `-h, --help` - display help for command
 - `-V, --version` - output the version number
-- `--exec <command>` - experimental feature, analyze error message and suggest a solution
-### Configuration
 
-- `-m, --model <modelName>` - OpenAI model name (default: "gpt-3.5-turbo")
-- `-k, --openai-api-key <key>` - OpenAI API key ([Get OpenAI API key](https://beta.openai.com/))
-- `-e, --editor <editor>` - Editor to open files (default: "code")
-- `-b, --base-url <url>` - Set OpenAI base url (default: "https://api.openai.com/v1")
+</details>
 
 ## Usage
 
 <details>
-  <summary>Refactor</summary>
+  <summary>Refactor code</summary>
 
-- If you need to use a prompt, use `-p` or `--prompt` option
-
-Example:
 ```bash
 # Refactor code
-$ copilot -r <file>
+$ copilot refactor ./server.js
 
 # Refactor code with prompt
-$ copilot -r ./server.js -p "transform server.js to use typescript"
-```
+$ copilot refactor ./server.js -p "use typescript"
 
-https://github.com/rsaryev/auto-copilot-cli/assets/70219513/cfe93a60-f214-4125-a2bf-80fac6d9b25d.png
+# Refactor code with prompt and output
+$ copilot refactor ./server.js -p "use typescript" -o ./server.ts
+```
 
 </details>
 
 <details>
-  <summary>CLI</summary>
+  <summary>Generate test</summary>
+
+```bash
+# Generate test
+$ copilot test ./server.js
+
+# Generate test with prompt
+$ copilot test ./server.js -p "use jest framework"
+
+# Generate test with prompt and output
+$ copilot test ./server.js -p "use jest framework" -o ./server.test.js
+```
+
+</details>
+
+<details>
+  <summary>Chat with AI</summary>
+
+```bash
+# Chat with AI
+$ copilot chat "How are you?"
+
+# Chat with AI with prompt
+$ copilot chat "How many types in typescript are there?" -p "Software Engineering"
+```
+
+</details>
+
+<details>
+  <summary>Generate and execute a shell command</summary>
 
 ```bash
 # Rename all files in the current directory to lowercase
-$ copilot "rename files in the current directory to lowercase"
+$ copilot shell "rename files in the current directory to lowercase"
 
 # Convert all images in the current directory to size 100x100
-$ copilot "convert all images in the current directory to size 100x100"
+$ copilot shell "convert all images in the current directory to size 100x100"
 
 # Create a file with implementation of binary search
-$ copilot "create a js file with implementation of binary search"
+$ copilot shell "create a js file with implementation of binary search"
 
 # Create a simple web server in Node.js using Koajs
-$ copilot "create a simple web server in Node.js using Koajs"
+$ copilot shell "create a simple web server in Node.js using Koajs"
 
 # Start PostgreSQL in Docker
-$ copilot "start PostgreSQL in Docker"
+$ copilot shell "start PostgreSQL in Docker"
 ```
-
-https://github.com/rsaryev/auto-copilot-cli/assets/70219513/3b6d7d7c-cd07-485b-8ee7-29649788a06f.png
 
 </details>
 
 <details>
-  <summary>Chat</summary>
+  <summary>Analyze error message</summary>
 
-- If you need to clear the history, just send an empty string in the conversation
-- If you need to use a prompt, use `-p` or `--prompt` option
-
-Example:
 ```bash
-# Chat with AI with prompt
-$ copilot -c --prompt "You are a web developer"
-
-# Chat with AI without prompt
-$ copilot -c
+# Analyze error message
+$ copilot analyze "node ./server.js"
 ```
-
-https://github.com/rsaryev/auto-copilot-cli/assets/70219513/c02a2918-f4b8-46e6-8fb7-88636a71f81b.png
 
 </details>
 
 <details>
-  <summary>Analyze</summary>
+  <summary>Set Config</summary>
 
-- Experimental feature, analyze error message and suggest a solution
-- You can run commands, services, etc. inside the analyzer, and you will get recommendations for fixing the error
-
-Example:
 ```bash
-# Invalid code in index.js returns an error and suggests a fix
-$ copilot --exec "node index.js"
+# Set openai api key
+$ copilot config OPENAI_API_KEY <api_key>
 
-# Invalid command in Docker returns an error and suggests a fix
-$ copilot --exec "docker ls"
+# Set openai base url
+$ copilot config OPEN_AI_BASE_URL <base_url>
 
-# Valid command in Docker not returns an error and not suggests a fix
-$ copilot --exec "docker ps"
+# Set openai model
+$ copilot config MODEL <model>
 ```
 
+</details>
 
-https://github.com/rsaryev/auto-copilot-cli/assets/70219513/735675ed-356c-4569-a559-58a129ed10c0
+<details>
+  <summary>Get Config</summary>
 
+```bash
+# Print config
+$ copilot get-config
+```
 
 </details>
+
+## Contributing
+
+Contributions are always welcome!
