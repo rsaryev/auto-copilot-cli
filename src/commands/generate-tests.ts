@@ -1,14 +1,14 @@
 import { Command } from '../types';
 import fs from 'fs';
 import chalk from 'chalk';
-import { askOpenEditor, askRetryRefactor, inputRefactor } from '../utils';
+import { askOpenEditor, askTest, inputTest } from '../utils';
 import { exec } from 'child_process';
 import ora from 'ora';
 import { LLMCode } from '../llm';
 
-export class RefactorCommand extends Command {
-  public async execute(
-    filePath: string,
+export class TestCommand extends Command {
+  async execute(
+    path: string,
     {
       prompt,
       output,
@@ -17,32 +17,30 @@ export class RefactorCommand extends Command {
       output?: string;
     },
   ): Promise<void> {
-    if (!fs.existsSync(filePath)) {
-      console.error(`${chalk.red('✘')} no such file or directory: ${filePath}`);
+    if (!fs.existsSync(path)) {
+      console.error(`${chalk.red('✘')} no such file or directory: ${path}`);
       return;
     }
 
-    const fileType = filePath.split('.').pop();
+    const fileType = path.split('.').pop();
     if (!fileType) {
-      console.error(`${chalk.red('✘')} invalid file type: ${filePath}`);
+      console.error(`${chalk.red('✘')} invalid file type: ${path}`);
       return;
     }
 
-    output = output || filePath.replace(`.${fileType}`, `.refactored.${fileType}`);
-
+    output = output || path.replace(`.${fileType}`, `.test.${fileType}`);
     const questionOpenCode = await askOpenEditor();
     if (questionOpenCode) {
       exec(`${this.config.EDITOR || 'code'} ${output}`);
     }
 
-    const spinner = ora('Refactoring');
-    const content = fs.readFileSync(filePath, 'utf-8');
-
+    const spinner = ora('Generating tests');
+    const content = fs.readFileSync(path, 'utf-8');
     const handleLLMStart = () => spinner.start();
-    const handleLLMEnd = () => spinner.succeed('Successfully refactored');
+    const handleLLMEnd = () => spinner.succeed('Successfully generated tests');
     const handleLLMError = () => spinner.fail();
 
-    await LLMCode.refactor({
+    await LLMCode.generateTest({
       config: this.config,
       content,
       prompt: prompt,
@@ -52,11 +50,12 @@ export class RefactorCommand extends Command {
       handleLLMError,
     });
 
-    const answer = await askRetryRefactor();
+    const answer = await askTest();
     if (answer) {
-      const input = await inputRefactor();
+      const input = await inputTest();
+      prompt = input;
       await this.execute(output, {
-        prompt: input,
+        prompt,
         output,
       });
     }

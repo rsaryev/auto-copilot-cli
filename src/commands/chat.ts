@@ -4,12 +4,17 @@ import * as readline from 'readline';
 import { inputAsk } from '../utils';
 
 export class ChatCommand extends Command {
-  async execute(command: string, prompt?: string): Promise<void> {
-    const input = await inputAsk();
+  async execute(
+    message: string,
+    options: {
+      prompt?: string;
+    },
+  ): Promise<void> {
+    const input = message || (await inputAsk());
     await LLMChat.chat({
       config: this.config,
       input,
-      prompt,
+      prompt: options.prompt,
       handleLLMStart: () => {
         readline.cursorTo(process.stdout, 0);
         process.stdout.write('🤖 ');
@@ -25,6 +30,6 @@ export class ChatCommand extends Command {
       },
     });
 
-    return this.execute(command, prompt);
+    return this.execute('', options);
   }
 }

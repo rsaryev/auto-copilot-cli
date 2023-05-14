@@ -36,18 +36,7 @@ export abstract class Command {
     this.config = config;
   }
 
-  abstract execute(command: string): Promise<void>;
-}
-
-export interface ICommandArgs {
-  model: string;
-  openaiApiKey: string;
-  editor: string;
-  refactor: string;
-  prompt: string;
-  baseUrl: string;
-  chat: string;
-  exec: string;
+  abstract execute(args: string, options: Record<any, any>): Promise<void>;
 }
 
 export interface IAnalyseParams {

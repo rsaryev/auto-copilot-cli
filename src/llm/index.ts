@@ -46,11 +46,16 @@ export class LLMGenerateShell extends LLMCommand {
 Goal: Write the best shell script based on the prompt: \`{prompt}\`
 
 Constraints:
-- The script should be compatible with the {os}.
-- The script should run without any user assistance.
+- should be compatible with the {os}.
+- Should work without user intervention and should not require keyboard input.
 - Every step should be printed to the console so that the user can understand what is happening.
 - Check the installed packages and install the missing packages if necessary.
-- If you need to create a file with a code in shell script, use \`cat > filename << EOF.
+- If you need to create a file use operator "Here Document" (<<) to create a multiline string:
+\`\`\`
+cat << EOF > file.txt
+{{content}}
+EOF
+\`\`\`
  
 Recommendations:
 - Use best practices
@@ -89,6 +94,59 @@ The current working directory is {workdir}
 export class LLMCode extends LLMCommand {
   constructor(config: IConfig) {
     super(config, 2056, true);
+  }
+
+  async generateTest({
+    content,
+    output,
+    prompt,
+    handleLLMStart,
+    handleLLMEnd,
+    handleLLMError,
+  }: IRefactorParams): Promise<void> {
+    const promptTemplate = new PromptTemplate({
+      template: `
+Goal: Generate tests for the following code as much as possible.
+Constraints:
+- The code should be formatted according to the standard for that programming language.
+
+Recommendations:
+- Use the best testing framework for the programming language.
+
+Output format:
+- Should be only tests code, otherwise the answer will be rejected.
+
+
+${prompt ? `Prompt for generating tests: \`\`\`${prompt}\`\`\`` : ''}
+The content: {content}
+      `,
+      inputVariables: ['content', 'date', 'output'],
+    });
+    const input = await promptTemplate.format({
+      content,
+      date: new Date().toISOString(),
+      prompt,
+      output,
+    });
+
+    const writeStream = fs.createWriteStream(output);
+
+    await this.llm.call(input, undefined, [
+      {
+        handleLLMStart,
+        handleLLMNewToken(token: string) {
+          writeStream.write(token);
+        },
+        handleLLMEnd() {
+          handleLLMEnd();
+          writeStream.end();
+        },
+        handleLLMError(e): Promise<void> | void {
+          handleLLMError(e);
+          writeStream.end();
+        },
+      },
+    ]);
   }
 
   async refactor({
@@ -148,6 +206,14 @@ The content: {content}
     },
   ): Promise<void> {
     return new LLMCode(params.config).refactor(params);
+  }
+
+  static async generateTest(
+    params: IRefactorParams & {
+      config: IConfig;
+    },
+  ): Promise<void> {
+    return new LLMCode(params.config).generateTest(params);
   }
 }
 
