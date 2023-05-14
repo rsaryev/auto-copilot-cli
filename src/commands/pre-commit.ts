@@ -25,7 +25,7 @@ export class PreCommitCommand extends Command {
       const shouldCommit = options.yes ? true : await askCommit(commitMessage);
       if (shouldCommit) {
         const spinner = ora('Committing').start();
-        await promisify(exec)(`git commit -m "${commitMessage}"`);
+        await promisify(exec)(`git commit -m ${commitMessage}`);
         spinner.succeed('Successfully committed');
       } else {
         const shouldRetry = await askRetryCommit();

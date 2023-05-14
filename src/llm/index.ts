@@ -359,6 +359,7 @@ export class LLMPreCommit extends LLMCommand {
       
       Answer format:
       - Return only the commit message, otherwise the answer will be rejected.
+      Example: "{{commit_message}}"
       
       The diff: 
       \`\`\`
