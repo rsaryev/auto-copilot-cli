@@ -356,6 +356,7 @@ export class LLMPreCommit extends LLMCommand {
       template: `"Generate a commit message for the following git diff:
       Recommendations:
       - Use best practices for the commit message.
+      - Shorter commit messages are better.
       
       Answer format:
       - Return only the commit message, otherwise the answer will be rejected.
