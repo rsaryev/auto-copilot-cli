@@ -11,7 +11,10 @@
 
 This is a CLI tool for generating tests, refactoring code, chatting with AI, generating and executing shell commands, and analyzing error messages.
 
-<h2 align="center">Demo</h2>
+![pre-commit](https://github.com/rsaryev/auto-copilot-cli/assets/70219513/ab8e1832-398c-4f25-8a03-6fa931bb0119)
+
+
+<h2 align="center">Full Demo</h2>
 
 <details>
   <summary>Click to view demo</summary>
