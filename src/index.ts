@@ -14,6 +14,7 @@ import chalk from 'chalk';
 import { PreCommitCommand } from './commands/pre-commit';
 import { checkNodeVersion } from './utils/helpers';
 import { checkUpdate } from './utils/update';
+import { SqlTranslatorCommand } from './commands/sql-translator';
 
 const program: Command = new Command()
   .name('auto-copilot-cli')
@@ -77,6 +78,30 @@ const refactorCommand: ICommand = {
     const config: IConfig = getConfig();
     const refactorCommand: RefactorCommand = new RefactorCommand(config);
     await refactorCommand.execute(file, options);
+  },
+};
+
+const sqlTranslatorCommand: ICommand = {
+  name: 'sql-translator',
+  description: 'Translate natural language to SQL',
+  args: '<query>',
+  options: [
+    {
+      name: '-o, --output <output>',
+      description: 'Output sql file',
+      required: false,
+    },
+    {
+      name: '-s, --schema-path <schemaPath>',
+      description: 'Path to schema file (sql, prisma, any format)',
+      required: false,
+    },
+  ],
+  action: async (query: string, options: { schemaPath?: string; output?: string }): Promise<void> => {
+    console.log(options.schemaPath);
+    const config: IConfig = getConfig();
+    const sqlCommand: SqlTranslatorCommand = new SqlTranslatorCommand(config);
+    await sqlCommand.execute(query, options);
   },
 };
 
@@ -168,6 +193,7 @@ const commands: ICommand[] = [
   configCommand,
   getConfigCommand,
   preCommitCommand,
+  sqlTranslatorCommand,
 ];
 
 async function main() {
