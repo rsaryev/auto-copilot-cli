@@ -3,7 +3,9 @@
 <details>
   <summary>Pre-commit</summary>
 
-![pre-commit](https://github.com/rsaryev/auto-copilot-cli/assets/70219513/805175ca-2d23-4468-9e11-8e3e1c1174cb)
+<p align="center">
+  <img src="https://github.com/rsaryev/auto-copilot-cli/assets/70219513/805175ca-2d23-4468-9e11-8e3e1c1174cb" width="800" alt="Pre-commit">
+</p>
 
 ```bash
 # Analyzes git diff and generates a commit message
@@ -18,7 +20,9 @@ $ copilot pre-commit -y
 <details>
   <summary>Refactor code</summary>
 
-![refactor](https://github.com/rsaryev/auto-copilot-cli/assets/70219513/2c7da6ed-d74a-4aa3-a6d0-33031cc492c0)
+<p align="center">
+  <img src="https://github.com/rsaryev/auto-copilot-cli/assets/70219513/2c7da6ed-d74a-4aa3-a6d0-33031cc492c0" width="800" alt="refactor">
+</p>
 
 ```bash
 # Refactor code
@@ -36,7 +40,9 @@ $ copilot refactor ./server.js -p "use typescript" -o ./server.ts
 <details>
   <summary>SQL Translator</summary>
 
-![sql-translator](https://github.com/rsaryev/auto-copilot-cli/assets/70219513/aa3c88d0-d747-48be-8406-7dbdab11061e)
+<p align="center">
+  <img src="https://github.com/rsaryev/auto-copilot-cli/assets/70219513/aa3c88d0-d747-48be-8406-7dbdab11061e" width="800" alt="sql-translator">
+</p>
 
 ```bash
 # Translate natural language to SQL
@@ -57,7 +63,9 @@ $ copilot sql-translator "get all last posts of users" -s ./schema.prisma
 <details>
   <summary>Generate test</summary>
 
-![test](https://github.com/rsaryev/auto-copilot-cli/assets/70219513/e405d17f-598c-457e-9827-1f7d8117e2b7)
+<p align="center">
+  <img src="https://github.com/rsaryev/auto-copilot-cli/assets/70219513/e405d17f-598c-457e-9827-1f7d8117e2b7" width="800" alt="sql-translator">
+</p>
 
 ```bash
 # Generate test
@@ -75,7 +83,9 @@ $ copilot test ./server.js -p "use jest framework" -o ./server.test.js
 <details>
   <summary>Chat with AI</summary>
 
-![chat](https://github.com/rsaryev/auto-copilot-cli/assets/70219513/85666309-ab3b-421f-8cbe-7c4efd7f5693)
+<p align="center">
+  <img src="https://github.com/rsaryev/auto-copilot-cli/assets/70219513/85666309-ab3b-421f-8cbe-7c4efd7f5693" width="800" alt="chat">
+</p>
 
 ```bash
 # Chat with AI
@@ -90,7 +100,9 @@ $ copilot chat "How many types in typescript are there?" -p "Software Engineerin
 <details>
   <summary>Generate and execute a shell command</summary>
 
-![shell](https://github.com/rsaryev/auto-copilot-cli/assets/70219513/4e2233cf-84ab-49b2-9d7a-1580d8d9cdd1)
+<p align="center">
+  <img src="https://github.com/rsaryev/auto-copilot-cli/assets/70219513/4e2233cf-84ab-49b2-9d7a-1580d8d9cdd1" width="800" alt="shell">
+</p>
 
 ```bash
 # Convert all mov files to gif
@@ -117,7 +129,9 @@ $ copilot shell "start PostgreSQL in Docker"
 <details>
   <summary>Analyze error message</summary>
 
-![error](https://github.com/rsaryev/auto-copilot-cli/assets/70219513/d257de69-77ac-4915-a7ef-fe69fae91ee4)
+<p align="center">
+  <img src="https://github.com/rsaryev/auto-copilot-cli/assets/70219513/d257de69-77ac-4915-a7ef-fe69fae91ee4" width="800" alt="error">
+</p>
 
 
 ```bash
