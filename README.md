@@ -1,5 +1,3 @@
-# Auto Copilot CLI
-
 <p align="center">
   <img src="https://github.com/rsaryev/auto-copilot-cli/assets/70219513/e7b250a0-e5a5-43ee-b4ba-1c15f1096064" width="600" alt="Auto Copilot CLI">
 </p>
