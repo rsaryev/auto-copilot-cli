@@ -11,6 +11,7 @@ import { IConfig } from './types';
 import axios, { AxiosError } from 'axios';
 import { askOpenAIKey } from './utils';
 import chalk from 'chalk';
+import { PreCommitCommand } from './commands/pre-commit';
 
 const program: Command = new Command()
   .name('auto-copilot-cli')
@@ -138,6 +139,24 @@ const getConfigCommand: ICommand = {
   },
 };
 
+const preCommitCommand: ICommand = {
+  name: 'pre-commit',
+  description: 'Pre commit hook',
+  args: '',
+  options: [
+    {
+      name: '-y, --yes',
+      description: 'Skip confirmation',
+      required: false,
+    },
+  ],
+  action: async (options: { yes?: string }): Promise<void> => {
+    const config: IConfig = getConfig();
+    const preCommitCommand: PreCommitCommand = new PreCommitCommand(config);
+    await preCommitCommand.execute('', options);
+  },
+};
+
 const commands: ICommand[] = [
   testCommand,
   refactorCommand,
@@ -146,6 +165,7 @@ const commands: ICommand[] = [
   analyzeCommand,
   configCommand,
   getConfigCommand,
+  preCommitCommand,
 ];
 
 commands.forEach(({ name, description, args, options, action }) => {

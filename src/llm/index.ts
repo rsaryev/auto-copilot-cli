@@ -345,3 +345,36 @@ The error output: {error_output}
     return new LLMAnalyse(params.config).analyse(params);
   }
 }
+
+export class LLMPreCommit extends LLMCommand {
+  constructor(config: IConfig) {
+    super(config, 256, true);
+  }
+
+  async preCommit(diff: string): Promise<string> {
+    const promptTemplate = new PromptTemplate({
+      template: `"Generate a commit message for the following git diff:
+      Recommendations:
+      - Use best practices for the commit message.
+      
+      Answer format:
+      - Return only the commit message, otherwise the answer will be rejected.
+      
+      The diff: 
+      \`\`\`
+      {diff}
+      \`\`\`
+      `,
+      inputVariables: ['diff'],
+    });
+    const input = await promptTemplate.format({
+      diff: diff.trim(),
+    });
+
+    return this.llm.call(input);
+  }
+
+  static async preCommit(params: { config: IConfig; diff: string }): Promise<string> {
+    return new LLMPreCommit(params.config).preCommit(params.diff);
+  }
+}

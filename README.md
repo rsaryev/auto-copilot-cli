@@ -49,6 +49,9 @@ curl -s https://raw.githubusercontent.com/rsaryev/auto-copilot-cli/main/deployme
     - Options:
         - `-p, --prompt <prompt>` - Prompt for AI
 - `shell <goal>` - Generate and execute a shell command
+- `pre-commit` - Analyzes git diff and generates a commit message
+    - Options:
+        - `-y, --yes` - Skip confirmation
 - `analyze <exec>` - Experimental feature, analyze error message and suggest a solution
 - `config <key> <value>` - Set config
 - `get-config` - Print config
@@ -61,6 +64,19 @@ curl -s https://raw.githubusercontent.com/rsaryev/auto-copilot-cli/main/deployme
 </details>
 
 ## Usage
+
+<details>
+  <summary>Pre-commit</summary>
+
+```bash
+# Analyzes git diff and generates a commit message
+$ copilot pre-commit
+
+# Analyzes git diff and generates a commit message with skip confirmation
+$ copilot pre-commit -y
+```
+
+</details>
 
 <details>
   <summary>Refactor code</summary>

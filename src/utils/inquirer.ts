@@ -1,4 +1,5 @@
 import inquirer from 'inquirer';
+import chalk from 'chalk';
 
 export const askExecute = async (): Promise<boolean> => {
   const { execute } = await inquirer.prompt<{ execute: 'Yes' | 'No' }>([
@@ -101,4 +102,30 @@ export const inputAsk = async (): Promise<string> => {
     },
   ]);
   return ask;
+};
+
+export const askCommit = async (commit: string): Promise<boolean> => {
+  const { ask } = await inquirer.prompt<{ ask: 'Yes' | 'No' }>([
+    {
+      type: 'list',
+      name: 'ask',
+      message: `Do you want to commit with the following message?
+${chalk.green(commit)}
+      `,
+      choices: ['Yes', 'No'],
+    },
+  ]);
+  return ask === 'Yes';
+};
+
+export const askRetryCommit = async (): Promise<boolean> => {
+  const { ask } = await inquirer.prompt<{ ask: 'Yes' | 'No' }>([
+    {
+      type: 'list',
+      name: 'ask',
+      message: `Do you want to retry generating commit message?`,
+      choices: ['Yes', 'No'],
+    },
+  ]);
+  return ask === 'Yes';
 };
