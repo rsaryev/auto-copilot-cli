@@ -8,7 +8,9 @@ if ! node -v | grep -q "^v18\."; then
 fi
 
 if ! npm list -g | grep -q "auto-copilot-cli"; then
-  echo "🚀 auto-copilot-cli is not installed. Installing auto-copilot-cli..."
+  echo "🚀 Node.js is installed. Installing auto-copilot-cli..."
   npm install -g auto-copilot-cli
 fi
+
+echo "🚀 auto-copilot-cli is installed. Running copilot --help"
 
