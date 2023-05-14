@@ -9,7 +9,7 @@
 
 ## Description
 
-This is a CLI tool for generating tests, refactoring code, chatting with AI, generating and executing shell commands, and analyzing error messages.
+This is a CLI tool for generating tests, refactoring code, chatting with AI, generating and executing shell commands, and translating natural language to SQL.
 
 ![pre-commit](https://github.com/rsaryev/auto-copilot-cli/assets/70219513/ab8e1832-398c-4f25-8a03-6fa931bb0119)
 
@@ -48,6 +48,10 @@ curl -s https://raw.githubusercontent.com/rsaryev/auto-copilot-cli/main/deployme
     - Options:
         - `-p, --prompt <prompt>` - Prompt for AI
         - `-o, --output <file>` - Output file
+-  `sql-translator <query>` - Translate natural language to SQL
+    - Options:
+        - `-o, --output <output>` - Output sql file
+        - `-s, --schema-path <schemaPath>` - Path to schema file (sql, prisma, any format)
 - `chat <chat>` - Chat with AI
     - Options:
         - `-p, --prompt <prompt>` - Prompt for AI
@@ -95,6 +99,25 @@ $ copilot refactor ./server.js -p "use typescript"
 $ copilot refactor ./server.js -p "use typescript" -o ./server.ts
 ```
 
+</details>
+
+<details>
+  <summary>SQL Translator</summary>
+
+```bash
+# Translate natural language to SQL
+$ copilot sql-translator "get all last posts of users"
+
+# Translate natural language to SQL with output
+$ copilot sql-translator "get all last posts of users"
+
+# Translate natural language to SQL with output and sql 
+$ copilot sql-translator "get all last posts of users" -s ./schema.sql
+
+# Translate natural language to SQL with output and prisma schema
+$ copilot sql-translator "get all last posts of users" -s ./schema.prisma
+
+```
 </details>
 
 <details>

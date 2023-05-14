@@ -96,6 +96,50 @@ export class LLMCode extends LLMCommand {
     super(config, 2056, true);
   }
 
+  async translateSql(params: IRefactorParams): Promise<void> {
+    const promptTemplate = new PromptTemplate({
+      template: `
+Goal: Based on the following prompt translate the natural language to sql.
+Constraints:
+- The sql should be formatted according to the standard for that programming language.
+
+Recommendations:
+- Use the best practices for writing sql.
+
+Output format:
+- Should be only sql, otherwise the answer will be rejected.
+
+
+The prompt: {prompt}
+The schema: {schema}
+      `,
+      inputVariables: ['output', 'prompt', 'schema'],
+    });
+
+    const writeStream = fs.createWriteStream(params.output);
+    const input = await promptTemplate.format({
+      prompt: params.prompt,
+      output: params.output,
+      schema: params.content.trim(),
+    });
+
+    await this.llm.call(input, undefined, [
+      {
+        handleLLMStart: params.handleLLMStart,
+        handleLLMNewToken(token: string) {
+          writeStream.write(token);
+        },
+        handleLLMEnd() {
+          params.handleLLMEnd();
+          writeStream.end();
+        },
+        handleLLMError(e): Promise<void> | void {
+          params.handleLLMError(e);
+          writeStream.end();
+        },
+      },
+    ]);
+  }
   async generateTest({
     content,
     output,
@@ -214,6 +258,14 @@ The content: {content}
     },
   ): Promise<void> {
     return new LLMCode(params.config).generateTest(params);
+  }
+
+  static async translateSql(
+    params: IRefactorParams & {
+      config: IConfig;
+    },
+  ): Promise<void> {
+    return new LLMCode(params.config).translateSql(params);
   }
 }
 
