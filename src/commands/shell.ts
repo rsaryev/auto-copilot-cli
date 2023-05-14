@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import chalk from 'chalk';
 import { randomUUID } from 'crypto';
-import { executeCommand, exFunction } from '../utils/helpers';
+import { executeCommand, executeShell, exFunction } from '../utils/helpers';
 import { askExecute, askOpenEditor } from '../utils';
 import { LLMGenerateShell } from '../llm';
 import os from 'os';
@@ -29,7 +29,7 @@ export class ShellCommand extends Command {
     const isApproved = await askExecute();
     if (isApproved) {
       const shellScriptModified = fs.readFileSync(pathToSaveShellScript, 'utf-8');
-      await executeCommand(shellScriptModified.toString());
+      await executeShell(shellScriptModified.toString());
     }
   }
 }

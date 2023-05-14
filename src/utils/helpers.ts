@@ -1,6 +1,7 @@
 import ora from 'ora';
 import { exec } from 'child_process';
 import chalk from 'chalk';
+import { spawn } from 'child_process';
 
 export const exFunction = async <T>(fn: () => Promise<T>, message: string, successMessage: string): Promise<T> => {
   const spinner = ora(message).start();
@@ -24,6 +25,20 @@ export function executeCommand(command: string) {
     child.stderr?.on('data', (data) => {
       process.stderr.write(data);
     });
+
+    child.on('close', (code) => {
+      resolve(code);
+    });
+  });
+}
+
+export function executeShell(command: string) {
+  return new Promise((resolve) => {
+    const child = spawn(command, [], { shell: true });
+    child.stdout.pipe(process.stdout);
+    child.stderr.pipe(process.stderr);
+    child.stdin.pipe(process.stdin);
+    process.stdin.pipe(child.stdin);
 
     child.on('close', (code) => {
       resolve(code);
