@@ -13,10 +13,12 @@ This is a CLI tool for generating tests, refactoring code, chatting with AI, gen
 
 <h2 align="center">Demo</h2>
 
+<details>
+  <summary>Click to view demo</summary>
 
 https://github.com/rsaryev/auto-copilot-cli/assets/70219513/08fd6f15-133d-4fdd-8a1a-aa350d17ce1e
 
-
+</details>
 
 ## Installation
 
