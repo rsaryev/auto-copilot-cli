@@ -11,7 +11,10 @@
 
 This is a CLI tool for generating tests, refactoring code, chatting with AI, generating and executing shell commands, and analyzing error messages.
 
-<h2 align="center">Demo</h2>
+![pre-commit](https://github.com/rsaryev/auto-copilot-cli/assets/70219513/ab8e1832-398c-4f25-8a03-6fa931bb0119)
+
+
+<h2 align="center">Full Demo</h2>
 
 <details>
   <summary>Click to view demo</summary>
@@ -49,6 +52,9 @@ curl -s https://raw.githubusercontent.com/rsaryev/auto-copilot-cli/main/deployme
     - Options:
         - `-p, --prompt <prompt>` - Prompt for AI
 - `shell <goal>` - Generate and execute a shell command
+- `pre-commit` - Analyzes git diff and generates a commit message
+    - Options:
+        - `-y, --yes` - Skip confirmation
 - `analyze <exec>` - Experimental feature, analyze error message and suggest a solution
 - `config <key> <value>` - Set config
 - `get-config` - Print config
@@ -61,6 +67,19 @@ curl -s https://raw.githubusercontent.com/rsaryev/auto-copilot-cli/main/deployme
 </details>
 
 ## Usage
+
+<details>
+  <summary>Pre-commit</summary>
+
+```bash
+# Analyzes git diff and generates a commit message
+$ copilot pre-commit
+
+# Analyzes git diff and generates a commit message with skip confirmation
+$ copilot pre-commit -y
+```
+
+</details>
 
 <details>
   <summary>Refactor code</summary>
