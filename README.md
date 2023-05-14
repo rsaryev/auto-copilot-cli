@@ -12,22 +12,6 @@
 
 This is a CLI tool for generating tests, refactoring code, chatting with AI, generating and executing shell commands, and translating natural language to SQL.
 
-<h2 align="center">Demo</h2>
-
-<details>
-  <summary>Click to view demo</summary>
-
-### Pre-commit - Analyzes git diff and generates a commit message
-![pre-commit](https://github.com/rsaryev/auto-copilot-cli/assets/70219513/ab8e1832-398c-4f25-8a03-6fa931bb0119)
-
-### SQL Translator - Translate natural language to SQL
-![sql-translator](https://github.com/rsaryev/auto-copilot-cli/assets/70219513/55b898bc-d868-479c-bece-e8f045728f9f)
-
-
-https://github.com/rsaryev/auto-copilot-cli/assets/70219513/08fd6f15-133d-4fdd-8a1a-aa350d17ce1e
-
-</details>
-
 ## Installation
 
 ```bash
@@ -80,6 +64,8 @@ curl -s https://raw.githubusercontent.com/rsaryev/auto-copilot-cli/main/deployme
 <details>
   <summary>Pre-commit</summary>
 
+![pre-commit](https://github.com/rsaryev/auto-copilot-cli/assets/70219513/805175ca-2d23-4468-9e11-8e3e1c1174cb)
+
 ```bash
 # Analyzes git diff and generates a commit message
 $ copilot pre-commit
@@ -92,6 +78,8 @@ $ copilot pre-commit -y
 
 <details>
   <summary>Refactor code</summary>
+  
+![refactor](https://github.com/rsaryev/auto-copilot-cli/assets/70219513/2c7da6ed-d74a-4aa3-a6d0-33031cc492c0)
 
 ```bash
 # Refactor code
@@ -108,6 +96,8 @@ $ copilot refactor ./server.js -p "use typescript" -o ./server.ts
 
 <details>
   <summary>SQL Translator</summary>
+  
+![sql-translator](https://github.com/rsaryev/auto-copilot-cli/assets/70219513/aa3c88d0-d747-48be-8406-7dbdab11061e)
 
 ```bash
 # Translate natural language to SQL
@@ -127,6 +117,8 @@ $ copilot sql-translator "get all last posts of users" -s ./schema.prisma
 
 <details>
   <summary>Generate test</summary>
+  
+![test](https://github.com/rsaryev/auto-copilot-cli/assets/70219513/e405d17f-598c-457e-9827-1f7d8117e2b7)
 
 ```bash
 # Generate test
@@ -143,6 +135,8 @@ $ copilot test ./server.js -p "use jest framework" -o ./server.test.js
 
 <details>
   <summary>Chat with AI</summary>
+  
+![chat](https://github.com/rsaryev/auto-copilot-cli/assets/70219513/85666309-ab3b-421f-8cbe-7c4efd7f5693)
 
 ```bash
 # Chat with AI
@@ -156,8 +150,13 @@ $ copilot chat "How many types in typescript are there?" -p "Software Engineerin
 
 <details>
   <summary>Generate and execute a shell command</summary>
+  
+![shell](https://github.com/rsaryev/auto-copilot-cli/assets/70219513/4e2233cf-84ab-49b2-9d7a-1580d8d9cdd1)
 
 ```bash
+# Convert all mov files to gif
+$ copilot shell "convert all mov files to gif"
+
 # Rename all files in the current directory to lowercase
 $ copilot shell "rename files in the current directory to lowercase"
 
@@ -178,6 +177,9 @@ $ copilot shell "start PostgreSQL in Docker"
 
 <details>
   <summary>Analyze error message</summary>
+  
+![error](https://github.com/rsaryev/auto-copilot-cli/assets/70219513/d257de69-77ac-4915-a7ef-fe69fae91ee4)
+
 
 ```bash
 # Analyze error message
