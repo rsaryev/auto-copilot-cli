@@ -11,6 +11,13 @@
 
 This is a CLI tool for generating tests, refactoring code, chatting with AI, generating and executing shell commands, and analyzing error messages.
 
+<h2 align="center">Demo</h2>
+
+
+https://github.com/rsaryev/auto-copilot-cli/assets/70219513/08fd6f15-133d-4fdd-8a1a-aa350d17ce1e
+
+
+
 ## Installation
 
 ```bash
