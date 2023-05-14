@@ -1,6 +1,9 @@
 # Auto Copilot CLI
 
-![logo](https://user-images.githubusercontent.com/70219513/236394679-7b1f4ac4-4454-4e91-97ea-41326d1df5b4.png)
+<p align="center">
+  <img src="https://github.com/rsaryev/auto-copilot-cli/assets/70219513/e7b250a0-e5a5-43ee-b4ba-1c15f1096064" width="600" alt="Auto Copilot CLI">
+</p>
+
 
 [![npm](https://img.shields.io/npm/v/auto-copilot-cli)](https://www.npmjs.com/package/auto-copilot-cli)
 [![Node.js Package](https://github.com/rsaryev/auto-copilot-cli/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/rsaryev/auto-copilot-cli/actions/workflows/npm-publish.yml)
