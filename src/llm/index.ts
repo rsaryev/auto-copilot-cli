@@ -101,7 +101,7 @@ export class LLMCode extends LLMCommand {
       template: `
 Goal: Based on the following prompt translate the natural language to sql.
 Constraints:
-- The sql should be formatted according to the standard for that programming language.
+- The sql should be formatted according to the standard for that sql language.
 
 Recommendations:
 - Use the best practices for writing sql.

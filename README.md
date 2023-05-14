@@ -11,13 +11,17 @@
 
 This is a CLI tool for generating tests, refactoring code, chatting with AI, generating and executing shell commands, and translating natural language to SQL.
 
-![pre-commit](https://github.com/rsaryev/auto-copilot-cli/assets/70219513/ab8e1832-398c-4f25-8a03-6fa931bb0119)
-
-
-<h2 align="center">Full Demo</h2>
+<h2 align="center">Demo</h2>
 
 <details>
   <summary>Click to view demo</summary>
+
+### Pre-commit - Analyzes git diff and generates a commit message
+![pre-commit](https://github.com/rsaryev/auto-copilot-cli/assets/70219513/ab8e1832-398c-4f25-8a03-6fa931bb0119)
+
+### SQL Translator - Translate natural language to SQL
+![sql-translator](https://github.com/rsaryev/auto-copilot-cli/assets/70219513/55b898bc-d868-479c-bece-e8f045728f9f)
+
 
 https://github.com/rsaryev/auto-copilot-cli/assets/70219513/08fd6f15-133d-4fdd-8a1a-aa350d17ce1e
 
