@@ -11,12 +11,12 @@ import { ChatCompletionRequestMessage } from 'openai';
 export class LLMCommand {
   protected llm: OpenAI;
 
-  constructor(config: IConfig, maxTokens: number, streaming: boolean) {
+  constructor(config: IConfig, maxTokens: number, streaming: boolean, temperature = 0) {
     this.llm = new OpenAI(
       {
         modelName: config.MODEL,
         maxTokens,
-        temperature: 0,
+        temperature,
         openAIApiKey: config.OPENAI_API_KEY,
         streaming,
       },
@@ -399,30 +399,60 @@ The error output: {error_output}
 }
 
 export class LLMPreCommit extends LLMCommand {
+  private config: IConfig;
   constructor(config: IConfig) {
-    super(config, 256, true);
+    super(config, 256, true, 0.7);
+    this.config = config;
   }
+  async preCommit(diff: string): Promise<{
+    title: string;
+    messages?: string[];
+  }> {
+    // const schema = this.config.INCLUDE_COMMIT_DESCRIPTION;
+    const schemaWithMessages = z.object({
+      title: z.string().describe('The title of short description of the changes'),
+      messages: z.array(z.string()).describe('paragraphs describing the changes'),
+    });
 
-  async preCommit(diff: string): Promise<string> {
+    const schemaWithOptionalMessages = z.object({
+      title: z.string().describe('The title of the commit'),
+    });
+
+    const parser = StructuredOutputParser.fromZodSchema(
+      this.config.INCLUDE_COMMIT_DESCRIPTION === 'yes' ? schemaWithMessages : schemaWithOptionalMessages,
+    );
+
     const promptTemplate = new PromptTemplate({
-      template: `"Review the diff and write a commit message that describes the changes.   
-Recommendations:
-- Conventional Commits
-- Try to write a commit_message_description_list short and clear description of the changes.
-- Try cleaning up the diff by removing unnecessary changes.
+      template: `You are reviewing the git diff and writing a git commit.
+Constraints:
+- Use format Conventional Commits.
 
-The diff: \`\`\`{diff}\`\`\`
+Answer:
+- Only valid JSON, otherwise the answer will be rejected.
+
+{format_instructions}
+The git diff: 
+\`\`\`{diff}\`\`\`
       `,
       inputVariables: ['diff'],
+      partialVariables: { format_instructions: parser.getFormatInstructions() },
     });
     const input = await promptTemplate.format({
       diff,
     });
 
-    return this.llm.call(input);
+    const response = await this.llm.call(input);
+    try {
+      return await parser.parse(response);
+    } catch (error) {
+      return throwLLMParseError();
+    }
   }
 
-  static async preCommit(params: { config: IConfig; diff: string }): Promise<string> {
+  static async preCommit(params: { config: IConfig; diff: string }): Promise<{
+    title: string;
+    messages?: string[];
+  }> {
     return new LLMPreCommit(params.config).preCommit(params.diff);
   }
 }

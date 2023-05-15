@@ -15,25 +15,27 @@ export class PreCommitCommand extends Command {
     const spinner = ora('Analyzing').start();
     try {
       const { config } = this;
+
       const { stdout: diff } = await promisify(exec)('git diff --cached');
       if (!diff) {
         spinner.succeed('No diff found using git add');
         return;
       }
-      const commitMessage = await LLMPreCommit.preCommit({ config, diff });
+
+      const { title, messages } = await LLMPreCommit.preCommit({ config, diff });
       spinner.stop();
-      const preparedCommitMessage =
-        commitMessage.startsWith('"') && commitMessage.endsWith('"') ? commitMessage : `"${commitMessage}"`;
-      const shouldCommit = options.yes ? true : await askCommit(preparedCommitMessage);
+
+      const commitBullets = messages?.map((message) => `- ${message}`).join('\n') ?? '';
+      const fullCommitMessage = `"${title}${commitBullets ? `\n\n${commitBullets}` : ''}"`;
+      const shouldCommit = await askCommit(fullCommitMessage);
+
       if (shouldCommit) {
-        const spinner = ora('Committing').start();
-        await promisify(exec)(`git commit -m ${preparedCommitMessage}`);
+        spinner.text = 'Committing';
+        await promisify(exec)(`git commit -m ${fullCommitMessage}`);
         spinner.succeed('Successfully committed');
       } else {
         const shouldRetry = await askRetryCommit();
-        if (shouldRetry) {
-          await this.execute(message, options);
-        }
+        if (shouldRetry) await this.execute(message, options);
       }
     } catch (error) {
       spinner.fail('Failed to commit');

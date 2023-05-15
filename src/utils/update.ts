@@ -20,6 +20,6 @@ export async function checkUpdate() {
       chalk.yellow(`Please update ${name} to the latest version: ${chalk.blue('npm i -g auto-copilot-cli')}`),
     );
   } else {
-    spinner.succeed(chalk.green(`You are using the latest version of ${name}`));
+    spinner.stop();
   }
 }

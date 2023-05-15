@@ -8,6 +8,16 @@
 </p>
 
 ```bash
+# Set config commit with description
+copilot config INCLUDE_COMMIT_DESCRIPTION yes
+
+# Set config commit without description
+copilot config INCLUDE_COMMIT_DESCRIPTION no
+```
+
+```bash
+```
+```bash
 # Analyzes git diff and generates a commit message
 $ copilot pre-commit
 
@@ -148,11 +158,17 @@ $ copilot analyze "node ./server.js"
 # Set openai api key
 $ copilot config OPENAI_API_KEY <api_key>
 
-# Set openai base url
+# Set openai base url Default: https://api.openai.com/v1
 $ copilot config OPEN_AI_BASE_URL <base_url>
 
-# Set openai model
+# Set openai model Default: gpt-3.5-turbo
 $ copilot config MODEL <model>
+
+# Set config commit with description Default: no
+copilot config INCLUDE_COMMIT_DESCRIPTION yes
+
+# Set config commit without description Default: no
+copilot config INCLUDE_COMMIT_DESCRIPTION no
 ```
 
 </details>

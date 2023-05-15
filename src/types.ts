@@ -4,6 +4,7 @@ export interface IConfig {
   MODEL: string;
   EDITOR: string;
   OPEN_AI_BASE_URL: string;
+  INCLUDE_COMMIT_DESCRIPTION: string;
 }
 
 export interface ShellScriptResponse {

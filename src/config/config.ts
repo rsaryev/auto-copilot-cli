@@ -1,13 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-
-export interface IConfig {
-  OPENAI_API_KEY: string;
-  TEMPERATURE: number;
-  MODEL: string;
-  EDITOR: string;
-  OPEN_AI_BASE_URL: string;
-}
+import { IConfig } from '../types';
 
 const configPath = path.join(__dirname, '../../config.json');
 
@@ -17,6 +10,7 @@ const defaultConfig: IConfig = {
   MODEL: 'gpt-3.5-turbo',
   EDITOR: 'code',
   OPEN_AI_BASE_URL: 'https://api.openai.com/v1',
+  INCLUDE_COMMIT_DESCRIPTION: 'no',
 };
 
 export function setConfig(config: IConfig): void {
