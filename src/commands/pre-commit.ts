@@ -27,7 +27,7 @@ export class PreCommitCommand extends Command {
 
       const commitBullets = messages?.map((message) => `- ${message}`).join('\n') ?? '';
       const fullCommitMessage = `"${title}${commitBullets ? `\n\n${commitBullets}` : ''}"`;
-      const shouldCommit = await askCommit(fullCommitMessage);
+      const shouldCommit = options.yes ? true : await askCommit(fullCommitMessage);
 
       if (shouldCommit) {
         spinner.text = 'Committing';
