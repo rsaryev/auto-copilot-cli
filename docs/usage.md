@@ -8,16 +8,6 @@
 </p>
 
 ```bash
-# Set config commit with description
-copilot config INCLUDE_COMMIT_DESCRIPTION yes
-
-# Set config commit without description
-copilot config INCLUDE_COMMIT_DESCRIPTION no
-```
-
-```bash
-```
-```bash
 # Analyzes git diff and generates a commit message
 $ copilot pre-commit
 
