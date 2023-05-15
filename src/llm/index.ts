@@ -405,24 +405,18 @@ export class LLMPreCommit extends LLMCommand {
 
   async preCommit(diff: string): Promise<string> {
     const promptTemplate = new PromptTemplate({
-      template: `"Generate a commit message for the following git diff:
-      Recommendations:
-      - Use best practices for the commit message.
-      - Shorter commit messages are better.
-      
-      Answer format:
-      - Return only the commit message, otherwise the answer will be rejected.
-      Example: "{{commit_message}}"
-      
-      The diff: 
-      \`\`\`
-      {diff}
-      \`\`\`
+      template: `"Review the diff and write a commit message that describes the changes.   
+Recommendations:
+- Conventional Commits
+- Try to write a commit_message_description_list short and clear description of the changes.
+- Try cleaning up the diff by removing unnecessary changes.
+
+The diff: \`\`\`{diff}\`\`\`
       `,
       inputVariables: ['diff'],
     });
     const input = await promptTemplate.format({
-      diff: diff.trim(),
+      diff,
     });
 
     return this.llm.call(input);
