@@ -1,6 +1,19 @@
 ## Usage
 
 <details>
+    <summary>Code review</summary>
+
+<p align="center">
+    <img src="" width="800" alt="code-review">
+</p>
+
+```bash
+# Code review
+$ copilot code-review
+```
+</details>
+
+<details>
   <summary>Pre-commit</summary>
 
 <p align="center">
