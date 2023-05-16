@@ -8,6 +8,10 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-blue)](https://github.com/transitive-bullshit/chatgpt-api/blob/main/license)
 [![auto-copilot-cli npm downloads](https://img.shields.io/npm/dt/auto-copilot-cli)](https://www.npmjs.com/package/auto-copilot-cli)
 
+<p align="center">
+    <img src="https://github.com/rsaryev/auto-copilot-cli/assets/70219513/d7abc8d7-9f5e-441c-8662-fe657ee07922" width="800" alt="code-review">
+</p>
+
 ## Description
 
 This is a CLI tool for code review, generating tests, refactoring code, chatting with AI, generating and executing shell commands, and translating natural language to SQL.
