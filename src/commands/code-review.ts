@@ -1,27 +1,34 @@
 import { Command } from '../types';
 import { LLMCodeReview } from '../llm';
-import readline from 'readline';
 import simpleGit from 'simple-git';
 import chalk from 'chalk';
 import path from 'path';
 import fs from 'fs';
+import { filterFilesByExtensions } from '../utils/languageExtensions';
 
 export class CodeReviewCommand extends Command {
   async execute(message: string, options: { yes?: string }): Promise<void> {
     const diff = await simpleGit(process.cwd()).diff(['--name-only', '--cached']);
-    const excludeFiles = ['.gitignore', 'package-lock.json', 'package.json'];
-    const diffFiles = diff.split('\n').filter((file) => file !== '' && !excludeFiles.includes(file));
+    const diffFiles = filterFilesByExtensions(diff.split('\n'));
+
     if (diffFiles.length === 0) {
       console.log(`${chalk.red('✘')} No files to review, use git add to add files to review`);
       return;
     }
+
     console.log(`${chalk.green('✔')} Found ${diffFiles.length} files to review`);
+
     const logPath = path.resolve(process.cwd(), 'review.log');
     const writeStream = fs.createWriteStream(logPath, { flags: 'a' });
+
     console.log(`${chalk.green('✔')} ${chalk.yellow('Writing review log to')} ${logPath}\n`);
+
     for (const file of diffFiles) {
+      console.log(`${chalk.green('✔')} ${chalk.yellow('Reviewing')} ${file}`);
+
       const filePath = path.resolve(process.cwd(), file);
       const content = fs.readFileSync(filePath, 'utf-8');
+
       if (content === '') {
         console.log(`${chalk.red('✘')} ${chalk.yellow('Skip empty file')}`);
         continue;
@@ -37,7 +44,7 @@ export class CodeReviewCommand extends Command {
         content,
         filePath,
         handleLLMStart: async () => {
-          readline.cursorTo(process.stdout, 0);
+          process.stdout.write('\n');
         },
         handleLLMEnd: async () => {
           process.stdout.write('\n');

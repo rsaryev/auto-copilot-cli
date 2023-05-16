@@ -487,15 +487,12 @@ During the analysis, you should pay attention to the use of best programming pra
 Constraints:
 - Always specify where exactly in the code "In ${fullFilePath}:line:column" and what exactly "Need to fix like this".
 - Do not suggest fixes that do not improve the code or fix errors.
-- Maximum 5 suggestions.
 - Be concise and accurate.
 
 Answer only valid, otherwise the answer will be rejected.
-
-Answer example:
 \`\`\`
-🤖 ${fullFilePath}:{{line}}:{{column}}
-- {{suggestion}}
+🤖 ${fullFilePath}:{{line}}:{{column}} 
+💡 {{suggestion}}
 \`\`\`,
 
 \`\`\`{code}\`\`\``,
