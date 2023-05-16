@@ -10,7 +10,7 @@
 
 ## Description
 
-This is a CLI tool for generating tests, refactoring code, chatting with AI, generating and executing shell commands, and translating natural language to SQL.
+This is a CLI tool for code review, generating tests, refactoring code, chatting with AI, generating and executing shell commands, and translating natural language to SQL.
 
 ## [Usage](https://github.com/rsaryev/auto-copilot-cli/blob/main/docs/usage.md)
 
@@ -31,6 +31,7 @@ curl -s https://raw.githubusercontent.com/rsaryev/auto-copilot-cli/main/deployme
 <details>
   <summary>List of commands</summary>
 
+- `code-review` - Code review
 - `test <file>` - Generate test
     - Options:
         - `-p, --prompt <prompt>` - Prompt for AI
