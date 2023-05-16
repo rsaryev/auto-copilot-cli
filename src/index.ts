@@ -15,6 +15,7 @@ import { PreCommitCommand } from './commands/pre-commit';
 import { checkNodeVersion } from './utils/helpers';
 import { checkUpdate } from './utils/update';
 import { SqlTranslatorCommand } from './commands/sql-translator';
+import { CodeReviewCommand } from './commands/code-review';
 
 const program: Command = new Command()
   .name('auto-copilot-cli')
@@ -98,7 +99,6 @@ const sqlTranslatorCommand: ICommand = {
     },
   ],
   action: async (query: string, options: { schemaPath?: string; output?: string }): Promise<void> => {
-    console.log(options.schemaPath);
     const config: IConfig = getConfig();
     const sqlCommand: SqlTranslatorCommand = new SqlTranslatorCommand(config);
     await sqlCommand.execute(query, options);
@@ -184,6 +184,23 @@ const preCommitCommand: ICommand = {
   },
 };
 
+const codeReviewCommand: ICommand = {
+  name: 'code-review',
+  description: 'Code review',
+  args: '',
+  options: [
+    {
+      name: '-y, --yes',
+      description: 'Skip confirmation',
+      required: false,
+    },
+  ],
+  action: async (options: { yes?: string }): Promise<void> => {
+    const config: IConfig = getConfig();
+    const codeReviewCommand = new CodeReviewCommand(config);
+    await codeReviewCommand.execute('', options);
+  },
+};
 const commands: ICommand[] = [
   testCommand,
   refactorCommand,
@@ -194,6 +211,7 @@ const commands: ICommand[] = [
   getConfigCommand,
   preCommitCommand,
   sqlTranslatorCommand,
+  codeReviewCommand,
 ];
 
 async function main() {
