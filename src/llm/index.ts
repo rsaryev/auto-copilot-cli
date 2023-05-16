@@ -488,13 +488,13 @@ Constraints:
 - Always specify where exactly in the code "In ${fullFilePath}:line:column" and what exactly "Need to fix like this".
 - Do not suggest fixes that do not improve the code or fix errors.
 - Maximum 5 suggestions.
-- Use Best practices в Code Review
+- Be concise and accurate.
 
 Answer only valid, otherwise the answer will be rejected.
 
 Answer example:
 \`\`\`
-🤖 ${fullFilePath}/src/index.ts:{{line}}:{{column}}
+🤖 ${fullFilePath}:{{line}}:{{column}}
 - {{suggestion}}
 \`\`\`,
 
