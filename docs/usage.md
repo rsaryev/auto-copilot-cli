@@ -1,6 +1,19 @@
 ## Usage
 
 <details>
+    <summary>Code review</summary>
+
+<p align="center">
+    <img src="https://github.com/rsaryev/auto-copilot-cli/assets/70219513/d7abc8d7-9f5e-441c-8662-fe657ee07922" width="800" alt="code-review">
+</p>
+
+```bash
+# Code review
+$ copilot code-review
+```
+</details>
+
+<details>
   <summary>Pre-commit</summary>
 
 <p align="center">

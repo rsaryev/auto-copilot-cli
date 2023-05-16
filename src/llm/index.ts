@@ -7,6 +7,7 @@ import { OpenAI, OpenAIChat } from 'langchain/llms/openai';
 import fs from 'fs';
 import { throwLLMParseError } from '../utils/error';
 import { ChatCompletionRequestMessage } from 'openai';
+import path from 'path';
 
 export class LLMCommand {
   protected llm: OpenAI;
@@ -140,6 +141,7 @@ The schema: {schema}
       },
     ]);
   }
+
   async generateTest({
     content,
     output,
@@ -272,6 +274,7 @@ The content: {content}
 export class LLMChat extends LLMCommand {
   private llmChat: OpenAIChat;
   static messages: ChatCompletionRequestMessage[] = [];
+
   constructor(config: IConfig) {
     super(config, 1024, false);
     this.llmChat = new OpenAIChat({
@@ -338,6 +341,7 @@ export class LLMAnalyse extends LLMCommand {
   constructor(config: IConfig) {
     super(config, 256, true);
   }
+
   async analyse({
     errorOutput,
     command,
@@ -400,15 +404,16 @@ The error output: {error_output}
 
 export class LLMPreCommit extends LLMCommand {
   private config: IConfig;
+
   constructor(config: IConfig) {
-    super(config, 256, true, 0.7);
+    super(config, 256, false, 0.7);
     this.config = config;
   }
+
   async preCommit(diff: string): Promise<{
     title: string;
     messages?: string[];
   }> {
-    // const schema = this.config.INCLUDE_COMMIT_DESCRIPTION;
     const schemaWithMessages = z.object({
       title: z.string().describe('The title of short description of the changes'),
       messages: z.array(z.string()).describe('paragraphs describing the changes'),
@@ -454,5 +459,85 @@ The git diff:
     messages?: string[];
   }> {
     return new LLMPreCommit(params.config).preCommit(params.diff);
+  }
+}
+
+export class LLMCodeReview extends LLMCommand {
+  private config: IConfig;
+
+  constructor(config: IConfig) {
+    super(config, 256, true, 0);
+    this.config = config;
+  }
+
+  async codeReview(params: {
+    content: string;
+    filePath: string;
+    handleLLMNewToken: (token: string) => Promise<void>;
+    handleLLMStart: () => Promise<void>;
+    handleLLMEnd: () => Promise<void>;
+    handleLLMError: (error: Error) => Promise<void>;
+  }): Promise<string> {
+    const fullFilePath = path.resolve(process.cwd(), params.filePath);
+    const promptTemplate = new PromptTemplate({
+      template: `You are an automatic assistant who helps with Code Review.
+The goal is to improve the quality of the code and ensure the effective operation of the application in terms of security, scalability, and ease of maintenance.
+During the analysis, you should pay attention to the use of best programming practices, code optimization, security, and compliance with coding standards.
+
+Constraints:
+- Always specify where exactly in the code "In ${fullFilePath}:line:column" and what exactly "Need to fix like this".
+- Do not suggest fixes that do not improve the code or fix errors.
+- Maximum 5 suggestions.
+- Use Best practices в Code Review
+
+Answer only valid, otherwise the answer will be rejected.
+
+Answer example:
+\`\`\`
+🤖 ${fullFilePath}/src/index.ts:{{line}}:{{column}}
+- {{suggestion}}
+\`\`\`,
+
+\`\`\`{code}\`\`\``,
+      inputVariables: ['code', 'filePath'],
+    });
+
+    const codeWithLineNumbers = params.content
+      .split('\n')
+      .map((line, index) => `/*${index + 1}*/ ${line}`)
+      .join('\n')
+      .trim();
+    const input = await promptTemplate.format({
+      code: codeWithLineNumbers,
+    });
+
+    const response = await this.llm.call(input, undefined, [
+      {
+        handleLLMNewToken: params.handleLLMNewToken,
+        handleLLMStart: params.handleLLMStart,
+        handleLLMEnd: params.handleLLMEnd,
+        handleLLMError: params.handleLLMError,
+      },
+    ]);
+    return response;
+  }
+
+  static async codeReview(params: {
+    config: IConfig;
+    content: string;
+    filePath: string;
+    handleLLMNewToken: (token: string) => Promise<void>;
+    handleLLMStart: () => Promise<void>;
+    handleLLMEnd: () => Promise<void>;
+    handleLLMError: (error: Error) => Promise<void>;
+  }): Promise<string> {
+    return new LLMCodeReview(params.config).codeReview({
+      content: params.content,
+      filePath: params.filePath,
+      handleLLMNewToken: params.handleLLMNewToken,
+      handleLLMStart: params.handleLLMStart,
+      handleLLMEnd: params.handleLLMEnd,
+      handleLLMError: params.handleLLMError,
+    });
   }
 }
