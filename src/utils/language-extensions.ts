@@ -25,7 +25,26 @@ export const programmingLanguageExtensions = {
   SQL: ['.sql'],
 };
 
+export const excludePackagesFilesList = {
+  JavaScript: ['package-lock.json', 'yarn.lock'],
+  Python: ['requirements.txt'],
+  Java: ['pom.xml'],
+  Go: ['go.mod'],
+  PHP: ['composer.json'],
+  Ruby: ['Gemfile'],
+  Rust: ['Cargo.toml'],
+  Swift: ['Package.swift'],
+  Kotlin: ['build.gradle'],
+  Scala: ['build.sbt'],
+  'Objective-C': ['Podfile'],
+  Shell: ['package.json'],
+  Perl: ['cpanfile'],
+  Lua: ['rockspec'],
+};
+
 export const extensions = new Set<string>(Object.values(programmingLanguageExtensions).flat());
+export const excludePackagesFiles = new Set<string>(Object.values(excludePackagesFilesList).flat());
+
 export const filterFilesByExtensions = (files: string[]): string[] => {
   return files.filter((file) => extensions.has(path.extname(file)));
 };

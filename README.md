@@ -9,7 +9,7 @@
 
 ## Description
 
-This is a CLI tool that provides various functionalities such as code review, test generation, code refactoring, AI
+This is a CLI tool that provides various functionalities such as code review, analyzing and suggesting better file/folder structure, test generation, code refactoring, AI
 chat, shell command generation and execution, and natural language to SQL translation.
 
 ## Setup
@@ -31,6 +31,7 @@ chat, shell command generation and execution, and natural language to SQL transl
 <details>
   <summary>List of commands</summary>
 
+- `lint-file` - Lint structure of a folder or a file and suggest a improvement
 - `code-review` - Perform code review
 - `test <file>` - Generate test
     - Options:

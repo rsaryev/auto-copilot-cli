@@ -1,16 +1,15 @@
 import { Command } from '../types';
 import { LLMCodeReview } from '../llm';
-import simpleGit from 'simple-git';
 import chalk from 'chalk';
 import path from 'path';
 import fs from 'fs';
-import { filterFilesByExtensions } from '../utils/languageExtensions';
+import { filterFilesByExtensions } from '../utils/language-extensions';
+import { prepareGitDiffFiles } from '../utils/helpers';
 
 export class CodeReviewCommand extends Command {
   async execute(message: string, options: { yes?: string }): Promise<void> {
-    const diff = await simpleGit(process.cwd()).diff(['--name-only', '--cached']);
+    const diff = await prepareGitDiffFiles();
     const diffFiles = filterFilesByExtensions(diff.split('\n'));
-
     if (diffFiles.length === 0) {
       console.log(`${chalk.red('✘')} No files to review, use git add to add files to review`);
       return;
