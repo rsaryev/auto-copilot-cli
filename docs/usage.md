@@ -8,6 +8,7 @@
 </p>
 
 Need to be in a git repository
+If you want some files not to be checked, then add to .gitignore
 ```bash
 # Code review
 $ copilot lint-file
@@ -22,6 +23,7 @@ $ copilot lint-file
 </p>
 
 Need to be in a git repository
+If you want some files not to be checked, then add to .gitignore
 ```bash
 # Code review
 $ copilot code-review
@@ -36,6 +38,7 @@ $ copilot code-review
 </p>
 
 Need to be in a git repository
+If you want some files not to be checked, then add to .gitignore
 ```bash
 # Analyzes git diff and generates a commit message
 $ copilot pre-commit

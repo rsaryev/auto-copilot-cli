@@ -12,11 +12,12 @@ import axios, { AxiosError } from 'axios';
 import { askOpenAIKey } from './utils';
 import chalk from 'chalk';
 import { PreCommitCommand } from './commands/pre-commit';
-import { checkGitExists, checkNodeVersion } from './utils/helpers';
+import { checkNodeVersion } from './utils/helpers';
 import { checkUpdate } from './utils/update';
 import { SqlTranslatorCommand } from './commands/sql-translator';
 import { CodeReviewCommand } from './commands/code-review';
-import { LintCheckFileCommand } from './commands/lint-file';
+import { LintFileCommand } from './commands/lint-file';
+import { checkGitExists } from './utils/git';
 
 const program: Command = new Command()
   .name('auto-copilot-cli')
@@ -213,8 +214,8 @@ const lintFileCommand: ICommand = {
   action: async (): Promise<void> => {
     await checkGitExists();
     const config: IConfig = getConfig();
-    const lintCheckFileCommand = new LintCheckFileCommand(config);
-    await lintCheckFileCommand.execute();
+    const lintFileCommand = new LintFileCommand(config);
+    await lintFileCommand.execute();
   },
 };
 const commands: ICommand[] = [

@@ -1,8 +1,15 @@
 import { Command } from '../types';
 import { LLMLintFile } from '../llm';
+import { gitDiffFiles } from '../utils/git';
+import chalk from 'chalk';
 
-export class LintCheckFileCommand extends Command {
+export class LintFileCommand extends Command {
   async execute(): Promise<void> {
+    const files = await gitDiffFiles();
+    if (files.length === 0) {
+      console.log(`${chalk.red('✘')} No files to review, use git add to add files to review`);
+      return;
+    }
     const handleLLMStart = async () => {
       void 0;
     };
@@ -17,6 +24,7 @@ export class LintCheckFileCommand extends Command {
     };
 
     await LLMLintFile.analyse({
+      files,
       config: this.config,
       handleLLMNewToken,
       handleLLMError,

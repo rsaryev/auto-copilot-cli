@@ -8,7 +8,6 @@ import fs from 'fs';
 import { throwLLMParseError } from '../utils/error';
 import { ChatCompletionRequestMessage } from 'openai';
 import path from 'path';
-import simpleGit from 'simple-git';
 
 export class LLMCommand {
   protected llm: OpenAI;
@@ -559,6 +558,7 @@ export class LLMLintFile extends LLMCommand {
   }
 
   async lintCheckFile(params: {
+    files: string[];
     handleLLMNewToken: (token: string) => Promise<void>;
     handleLLMStart: () => Promise<void>;
     handleLLMEnd: () => Promise<void>;
@@ -587,9 +587,8 @@ output: {files}
       inputVariables: ['files'],
     });
 
-    const files = await simpleGit(process.cwd()).raw(['ls-files']);
     const input = await promptTemplate.format({
-      files,
+      files: params.files,
     });
 
     await this.llm.call(input, undefined, [
@@ -603,6 +602,7 @@ output: {files}
   }
 
   static async analyse(params: {
+    files: string[];
     config: IConfig;
     handleLLMNewToken: (token: string) => Promise<void>;
     handleLLMStart: () => Promise<void>;

@@ -2,8 +2,6 @@ import ora from 'ora';
 import { exec } from 'child_process';
 import chalk from 'chalk';
 import { spawn } from 'child_process';
-import simpleGit from 'simple-git';
-import { excludePackagesFiles, extensions, filterFilesByExtensions } from './language-extensions';
 
 export const exFunction = async <T>(fn: () => Promise<T>, message: string, successMessage: string): Promise<T> => {
   const spinner = ora(message).start();
@@ -55,39 +53,3 @@ export function checkNodeVersion() {
     process.exit(1);
   }
 }
-
-export async function checkGitExists() {
-  const gitExists = await simpleGit().checkIsRepo();
-  if (!gitExists) {
-    console.error(`${chalk.red('✘')} need to be in a git repository`);
-    process.exit(1);
-  }
-}
-
-export const prepareGitDiffCommand = () => {
-  const exts = [...extensions.values()].map((ext) => `*${ext}`);
-  const excludeFiles = [...excludePackagesFiles.values()];
-
-  return simpleGit().diff([
-    '--cached',
-    '--diff-filter=ACMRT',
-    '--',
-    ...exts,
-    ...excludeFiles.map((file) => `:(exclude)${file}`),
-  ]);
-};
-
-// git diff --name-only --cached
-export const prepareGitDiffFiles = async () => {
-  const exts = [...extensions.values()].map((ext) => `*${ext}`);
-  const excludeFiles = [...excludePackagesFiles.values()];
-
-  return simpleGit().diff([
-    '--name-only',
-    '--cached',
-    '--diff-filter=ACMRT',
-    '--',
-    ...exts,
-    ...excludeFiles.map((file) => `:(exclude)${file}`),
-  ]);
-};
