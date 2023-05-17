@@ -8,6 +8,7 @@ import fs from 'fs';
 import { throwLLMParseError } from '../utils/error';
 import { ChatCompletionRequestMessage } from 'openai';
 import path from 'path';
+import simpleGit from 'simple-git';
 
 export class LLMCommand {
   protected llm: OpenAI;
@@ -496,7 +497,7 @@ Answer only valid, otherwise the answer will be rejected.
 \`\`\`,
 
 \`\`\`{code}\`\`\``,
-      inputVariables: ['code', 'filePath'],
+      inputVariables: ['code'],
     });
 
     const codeWithLineNumbers = params.content
@@ -536,5 +537,78 @@ Answer only valid, otherwise the answer will be rejected.
       handleLLMEnd: params.handleLLMEnd,
       handleLLMError: params.handleLLMError,
     });
+  }
+}
+
+function strTree(node: any, prefix = '') {
+  let result = `${prefix + node.name}\n`;
+  if (node.children) {
+    node.children.forEach((child: any) => {
+      result += strTree(child, prefix + '│  ');
+    });
+  }
+  return result;
+}
+
+export class LLMLintFile extends LLMCommand {
+  private config: IConfig;
+
+  constructor(config: IConfig) {
+    super(config, 256, true, 0);
+    this.config = config;
+  }
+
+  async lintCheckFile(params: {
+    handleLLMNewToken: (token: string) => Promise<void>;
+    handleLLMStart: () => Promise<void>;
+    handleLLMEnd: () => Promise<void>;
+    handleLLMError: (error: Error) => Promise<void>;
+  }): Promise<void> {
+    const promptTemplate = new PromptTemplate({
+      template: `You are an assistant who helps with organizing files and folders.
+Your goal is to analyze and suggest a better structure files and folders for the project.
+
+Constraints:
+- Always specify where exactly in the code "In {{path}}" and what exactly "Need to fix like this".
+- Do not suggest fixes that do not improve the project structure.
+- Be concise and accurate.
+- Use best practices and standards for naming files and folders.
+- No suggestions for files and folders that are not in the project.
+
+Answer only valid, otherwise the answer will be rejected.
+\`\`\`
+🤖 {{path}}
+💡 {{suggestionNewPath}}
+💬 {{description}}
+\`\`\`
+
+output: {files}
+`,
+      inputVariables: ['files'],
+    });
+
+    const files = await simpleGit(process.cwd()).raw(['ls-files']);
+    const input = await promptTemplate.format({
+      files,
+    });
+
+    await this.llm.call(input, undefined, [
+      {
+        handleLLMNewToken: params.handleLLMNewToken,
+        handleLLMStart: params.handleLLMStart,
+        handleLLMEnd: params.handleLLMEnd,
+        handleLLMError: params.handleLLMError,
+      },
+    ]);
+  }
+
+  static async analyse(params: {
+    config: IConfig;
+    handleLLMNewToken: (token: string) => Promise<void>;
+    handleLLMStart: () => Promise<void>;
+    handleLLMEnd: () => Promise<void>;
+    handleLLMError: (error: Error) => Promise<void>;
+  }) {
+    return new LLMLintFile(params.config).lintCheckFile(params);
   }
 }

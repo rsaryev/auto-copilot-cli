@@ -12,10 +12,11 @@ import axios, { AxiosError } from 'axios';
 import { askOpenAIKey } from './utils';
 import chalk from 'chalk';
 import { PreCommitCommand } from './commands/pre-commit';
-import { checkNodeVersion } from './utils/helpers';
+import { checkGitExists, checkNodeVersion } from './utils/helpers';
 import { checkUpdate } from './utils/update';
 import { SqlTranslatorCommand } from './commands/sql-translator';
 import { CodeReviewCommand } from './commands/code-review';
+import { LintCheckFileCommand } from './commands/lint-file';
 
 const program: Command = new Command()
   .name('auto-copilot-cli')
@@ -178,6 +179,7 @@ const preCommitCommand: ICommand = {
     },
   ],
   action: async (options: { yes?: string }): Promise<void> => {
+    await checkGitExists();
     const config: IConfig = getConfig();
     const preCommitCommand: PreCommitCommand = new PreCommitCommand(config);
     await preCommitCommand.execute('', options);
@@ -196,9 +198,23 @@ const codeReviewCommand: ICommand = {
     },
   ],
   action: async (options: { yes?: string }): Promise<void> => {
+    await checkGitExists();
     const config: IConfig = getConfig();
     const codeReviewCommand = new CodeReviewCommand(config);
     await codeReviewCommand.execute('', options);
+  },
+};
+
+const lintFileCommand: ICommand = {
+  name: 'lint-file',
+  description: 'Lint structure of a folder or a file and suggest a improvement',
+  args: '',
+  options: [],
+  action: async (): Promise<void> => {
+    await checkGitExists();
+    const config: IConfig = getConfig();
+    const lintCheckFileCommand = new LintCheckFileCommand(config);
+    await lintCheckFileCommand.execute();
   },
 };
 const commands: ICommand[] = [
@@ -212,6 +228,7 @@ const commands: ICommand[] = [
   preCommitCommand,
   sqlTranslatorCommand,
   codeReviewCommand,
+  lintFileCommand,
 ];
 
 async function main() {

@@ -1,12 +1,27 @@
 ## Usage
 
 <details>
+    <summary>Lint files</summary>
+
+<p align="center">
+    <img src="https://github.com/rsaryev/auto-copilot-cli/assets/70219513/20b7bddf-b8f3-486f-a947-02d924e764df" width="800" alt="code-review">
+</p>
+
+Need to be in a git repository
+```bash
+# Code review
+$ copilot lint-file
+```
+</details>
+
+<details>
     <summary>Code review</summary>
 
 <p align="center">
     <img src="https://github.com/rsaryev/auto-copilot-cli/assets/70219513/d7abc8d7-9f5e-441c-8662-fe657ee07922" width="800" alt="code-review">
 </p>
 
+Need to be in a git repository
 ```bash
 # Code review
 $ copilot code-review
@@ -20,6 +35,7 @@ $ copilot code-review
   <img src="https://github.com/rsaryev/auto-copilot-cli/assets/70219513/805175ca-2d23-4468-9e11-8e3e1c1174cb" width="800" alt="Pre-commit">
 </p>
 
+Need to be in a git repository
 ```bash
 # Analyzes git diff and generates a commit message
 $ copilot pre-commit

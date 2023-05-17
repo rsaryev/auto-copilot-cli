@@ -4,6 +4,7 @@ import { exec } from 'child_process';
 import { promisify } from 'util';
 import { askCommit, askRetryCommit } from '../utils';
 import ora from 'ora';
+import { prepareGitDiffCommand } from '../utils/helpers';
 
 export class PreCommitCommand extends Command {
   async execute(
@@ -16,7 +17,7 @@ export class PreCommitCommand extends Command {
     try {
       const { config } = this;
 
-      const { stdout: diff } = await promisify(exec)('git diff --cached');
+      const diff = await prepareGitDiffCommand();
       if (!diff) {
         spinner.succeed('No diff found using git add');
         return;
