@@ -1,13 +1,13 @@
 import { PromptTemplate } from 'langchain/prompts';
 import { z } from 'zod';
 import * as os from 'os';
-import { StructuredOutputParser } from 'langchain/output_parsers';
 import { IAnalyseParams, IChatParams, IConfig, IRefactorParams, ShellScriptResponse } from '../types';
 import { OpenAI, OpenAIChat } from 'langchain/llms/openai';
 import fs from 'fs';
 import { throwLLMParseError } from '../utils/error';
 import { ChatCompletionRequestMessage } from 'openai';
 import path from 'path';
+import { AiValidator } from 'ai-validator';
 
 export class LLMCommand {
   protected llm: OpenAI;
@@ -34,20 +34,16 @@ export class LLMGenerateShell extends LLMCommand {
   }
 
   async generateShell(prompt: string): Promise<ShellScriptResponse> {
-    const parser = StructuredOutputParser.fromZodSchema(
-      z.object({
-        shellScript: z.string().describe(`shell script with comments`),
-        isDangerous: z.boolean().describe(`if the shell is very dangerous, it will be marked as dangerous`),
-        description: z.string().describe(`short description`),
-      }),
-    );
-
-    const promptTemplate = new PromptTemplate({
-      template: `
-Goal: Write the best shell script based on the prompt: \`{prompt}\`
+    const schema = z.object({
+      shellScript: z.string().describe(`shell script with comments`),
+      isDangerous: z.boolean().describe(`if the shell is very dangerous, it will be marked as dangerous`),
+      description: z.string().describe(`short description`),
+    });
+    const validator = AiValidator.input`
+Goal: Write the best shell script based on the prompt: \`${prompt}\`
 
 Constraints:
-- should be compatible with the {os}.
+- should be compatible with the ${os.platform()}.
 - Should work without user intervention and should not require keyboard input.
 - Every step should be printed to the console so that the user can understand what is happening.
 - Check the installed packages and install the missing packages if necessary.
@@ -60,28 +56,13 @@ EOF
  
 Recommendations:
 - Use best practices
-
-Answer:
-- Only valid, otherwise the answer will be rejected.
-
-{format_instructions}
-The current time and date is {date}
-The current working directory is {workdir}
-`,
-      inputVariables: ['prompt', 'os', 'date', 'workdir'],
-      partialVariables: { format_instructions: parser.getFormatInstructions() },
-    });
-
-    const input = await promptTemplate.format({
-      prompt,
-      os: os.platform(),
-      date: new Date().toLocaleString(),
-      workdir: process.cwd(),
-    });
-
-    const response = await this.llm.call(input);
+${schema}
+The current time and date is ${new Date().toLocaleString()}
+The current working directory is ${process.cwd()}
+`;
+    const response = await this.llm.call(validator.prompt());
     try {
-      return parser.parse(response);
+      return validator.parse(response);
     } catch (error) {
       return throwLLMParseError();
     }
@@ -423,32 +404,18 @@ export class LLMPreCommit extends LLMCommand {
       title: z.string().describe('The title of the commit'),
     });
 
-    const parser = StructuredOutputParser.fromZodSchema(
-      this.config.INCLUDE_COMMIT_DESCRIPTION === 'yes' ? schemaWithMessages : schemaWithOptionalMessages,
-    );
-
-    const promptTemplate = new PromptTemplate({
-      template: `You are reviewing the git diff and writing a git commit.
+    const schema = this.config.INCLUDE_COMMIT_DESCRIPTION === 'yes' ? schemaWithMessages : schemaWithOptionalMessages;
+    const validator = AiValidator.input`You are reviewing the git diff and writing a git commit.
 Constraints:
 - Use format Conventional Commits.
 
-Answer:
-- Only valid JSON, otherwise the answer will be rejected.
-
-{format_instructions}
+${schema}
 The git diff: 
-\`\`\`{diff}\`\`\`
-      `,
-      inputVariables: ['diff'],
-      partialVariables: { format_instructions: parser.getFormatInstructions() },
-    });
-    const input = await promptTemplate.format({
-      diff,
-    });
-
-    const response = await this.llm.call(input);
+\`\`\`${diff}\`\`\`
+      `;
+    const response = await this.llm.call(validator.prompt());
     try {
-      return await parser.parse(response);
+      return await validator.parse(response.replace(/\\n/g, '\n'));
     } catch (error) {
       return throwLLMParseError();
     }
