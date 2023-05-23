@@ -5,6 +5,7 @@ export interface IConfig {
   EDITOR: string;
   OPEN_AI_BASE_URL: string;
   INCLUDE_COMMIT_DESCRIPTION: string;
+  PACKAGE_MANAGER: string;
 }
 
 export interface ShellScriptResponse {

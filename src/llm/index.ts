@@ -8,11 +8,14 @@ import { throwLLMParseError } from '../utils/error';
 import { ChatCompletionRequestMessage } from 'openai';
 import path from 'path';
 import { AiValidator } from 'ai-validator';
+import { getPackageManagerByOs } from '../utils/helpers';
 
 export class LLMCommand {
   protected llm: OpenAI;
+  protected config: IConfig;
 
   constructor(config: IConfig, maxTokens: number, streaming: boolean, temperature = 0) {
+    this.config = config;
     this.llm = new OpenAI(
       {
         modelName: config.MODEL,
@@ -34,6 +37,7 @@ export class LLMGenerateShell extends LLMCommand {
   }
 
   async generateShell(prompt: string): Promise<ShellScriptResponse> {
+    const packageManager = this.config.PACKAGE_MANAGER || getPackageManagerByOs();
     const schema = z.object({
       shellScript: z.string().describe(`shell script with comments`),
       isDangerous: z.boolean().describe(`if the shell is very dangerous, it will be marked as dangerous`),
@@ -42,7 +46,7 @@ export class LLMGenerateShell extends LLMCommand {
     const validator = AiValidator.input`
 Goal: Write the best shell script based on the prompt: \`${prompt}\`
 
-Constraints:
+Constraints for the shell script:
 - should be compatible with the ${os.platform()}.
 - Should work without user intervention and should not require keyboard input.
 - Every step should be printed to the console so that the user can understand what is happening.
@@ -53,12 +57,17 @@ cat << EOF > file.txt
 {{content}}
 EOF
 \`\`\`
+- Use package manager ${packageManager}
  
 Recommendations:
 - Use best practices
+- Use the best tools for the job
+- Use the best practices for writing shell scripts
+
 ${schema}
 The current time and date is ${new Date().toLocaleString()}
 The current working directory is ${process.cwd()}
+The current os platform is ${os.platform()}
 `;
     const response = await this.llm.call(validator.prompt());
     try {
@@ -384,11 +393,8 @@ The error output: {error_output}
 }
 
 export class LLMPreCommit extends LLMCommand {
-  private config: IConfig;
-
   constructor(config: IConfig) {
     super(config, 256, false, 0.7);
-    this.config = config;
   }
 
   async preCommit(diff: string): Promise<{
@@ -430,11 +436,8 @@ The git diff:
 }
 
 export class LLMCodeReview extends LLMCommand {
-  private config: IConfig;
-
   constructor(config: IConfig) {
     super(config, 256, true, 0);
-    this.config = config;
   }
 
   async codeReview(params: {
@@ -517,11 +520,8 @@ function strTree(node: any, prefix = '') {
 }
 
 export class LLMLintFile extends LLMCommand {
-  private config: IConfig;
-
   constructor(config: IConfig) {
     super(config, 256, true, 0);
-    this.config = config;
   }
 
   async lintCheckFile(params: {

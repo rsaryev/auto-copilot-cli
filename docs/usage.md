@@ -191,6 +191,10 @@ copilot config INCLUDE_COMMIT_DESCRIPTION yes
 
 # Set config commit without description Default: no
 copilot config INCLUDE_COMMIT_DESCRIPTION no
+
+# Set config package manager Default: brew
+# For determine which package manager to recommend in generated shell scripts
+copilot config PACKAGE_MANAGER brew
 ```
 
 </details>

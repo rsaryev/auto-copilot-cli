@@ -11,6 +11,7 @@ const defaultConfig: IConfig = {
   EDITOR: 'code',
   OPEN_AI_BASE_URL: 'https://api.openai.com/v1',
   INCLUDE_COMMIT_DESCRIPTION: 'no',
+  PACKAGE_MANAGER: 'brew',
 };
 
 export function setConfig(config: IConfig): void {

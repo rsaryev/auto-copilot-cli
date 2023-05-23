@@ -53,3 +53,13 @@ export function checkNodeVersion() {
     process.exit(1);
   }
 }
+
+export function getPackageManagerByOs() {
+  const os = process.platform;
+  const packageManager: Record<string, string> = {
+    linux: 'apt-get',
+    darwin: 'brew',
+    win32: 'choco',
+  };
+  return packageManager[os] || 'apt-get';
+}
