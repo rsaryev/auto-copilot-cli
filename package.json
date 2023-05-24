@@ -44,7 +44,7 @@
     "directory-tree": "^3.5.1",
     "hnswlib-node": "^1.4.2",
     "inquirer": "^8.2.5",
-    "langchain": "^0.0.69",
+    "langchain": "^0.0.81",
     "openai": "^3.2.1",
     "ora": "^5.4.1",
     "semver": "^7.5.0",

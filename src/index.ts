@@ -18,6 +18,7 @@ import { SqlTranslatorCommand } from './commands/sql-translator';
 import { CodeReviewCommand } from './commands/code-review';
 import { LintFileCommand } from './commands/lint-file';
 import { checkGitExists } from './utils/git';
+import { CodeChatCommand } from './commands/code-chat-command';
 
 const program: Command = new Command()
   .name('auto-copilot-cli')
@@ -218,6 +219,25 @@ const lintFileCommand: ICommand = {
     await lintFileCommand.execute();
   },
 };
+
+const codeChatCommand: ICommand = {
+  name: 'code-chat',
+  description: 'Chat with AI about code',
+  args: '<directory>',
+  options: [
+    {
+      name: '-p, --prompt <prompt>',
+      description: 'Prompt for AI',
+      required: false,
+    },
+  ],
+  action: async (directory: string, options: { prompt?: string }): Promise<void> => {
+    const config: IConfig = getConfig();
+    const codeChatCommand: CodeChatCommand = new CodeChatCommand(config);
+    await codeChatCommand.execute(directory, options);
+  },
+};
+
 const commands: ICommand[] = [
   testCommand,
   refactorCommand,
@@ -230,6 +250,7 @@ const commands: ICommand[] = [
   sqlTranslatorCommand,
   codeReviewCommand,
   lintFileCommand,
+  codeChatCommand,
 ];
 
 async function main() {

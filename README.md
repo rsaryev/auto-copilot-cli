@@ -4,7 +4,7 @@
 [![auto-copilot-cli npm downloads](https://img.shields.io/npm/dt/auto-copilot-cli)](https://www.npmjs.com/package/auto-copilot-cli)
 
 <p align="center">
-    <img src="https://github.com/rsaryev/auto-copilot-cli/assets/70219513/d7abc8d7-9f5e-441c-8662-fe657ee07922" width="700" alt="code-review">
+  <img src="https://github.com/rsaryev/auto-copilot-cli/assets/70219513/8deb1865-6ec6-4dc8-a631-344627dabb83" width="800" alt="chat">
 </p>
 
 ## Description
@@ -28,32 +28,32 @@ chat, shell command generation and execution, and natural language to SQL transl
 
 ### Commands
 
-<details>
-  <summary>List of commands</summary>
-
-- `lint-file` - Lint structure of a folder or a file and suggest a improvement
-- `code-review` - Perform code review
-- `test <file>` - Generate test
+- `code-chat <path>` - Chat with AI about code [usage](https://github.com/rsaryev/auto-copilot-cli/blob/main/docs/code-chat.md)
+    - Options:
+        - `-p, --prompt <prompt>` - Prompt for AI
+- `lint-file` - Lint structure of a folder or a file and suggest a improvement [usage](https://github.com/rsaryev/auto-copilot-cli/blob/main/docs/lint-file.md) - Lint structure of a folder or a file and suggest a improvement
+- `code-review` - Perform code review [usage](https://github.com/rsaryev/auto-copilot-cli/blob/main/docs/code-review.md) - Perform code review
+- `test <file>` - Generate test [usage](https://github.com/rsaryev/auto-copilot-cli/blob/main/docs/test.md)
     - Options:
         - `-p, --prompt <prompt>` - Prompt for AI
         - `-o, --output <file>` - Output file
-- `refactor <file>` - Refactor code
+- `refactor <file>` - Refactor code [usage](https://github.com/rsaryev/auto-copilot-cli/blob/main/docs/refactor.md)
     - Options:
         - `-p, --prompt <prompt>` - Prompt for AI
         - `-o, --output <file>` - Output file
-- `sql-translator <query>` - Translate natural language to SQL
+- `sql-translator <query>` - Translate natural language to SQL [usage](https://github.com/rsaryev/auto-copilot-cli/blob/main/docs/sql-translator.md)
     - Options:
         - `-o, --output <output>` - Output sql file
         - `-s, --schema-path <schemaPath>` - Path to schema file (sql, prisma, any format)
-- `chat <chat>` - Chat with AI
+- `chat <chat>` - Chat with AI [usage](https://github.com/rsaryev/auto-copilot-cli/blob/main/docs/chat.md)
     - Options:
         - `-p, --prompt <prompt>` - Prompt for AI
-- `shell <goal>` - Generate and execute a shell command
-- `pre-commit` - Analyze git diff and generate a commit message
+- `shell <goal>` - Generate and execute a shell command [usage](https://github.com/rsaryev/auto-copilot-cli/blob/main/docs/shell.md)
+- `pre-commit` - Analyze git diff and generate a commit message [usage](https://github.com/rsaryev/auto-copilot-cli/blob/main/docs/pre-commit.md)
     - Options:
         - `-y, --yes` - Skip confirmation
-- `analyze <exec>` - Experimental feature, analyze error message and suggest a solution
-- `config <key> <value>` - Set configuration
+- `analyze <exec>` - Experimental feature, analyze error message and suggest a solution [usage](https://github.com/rsaryev/auto-copilot-cli/blob/main/docs/analyze.md)
+- `config <key> <value>` - Set configuration [usage](https://github.com/rsaryev/auto-copilot-cli/blob/main/docs/config.md)
 - `get-config` - Print configuration
 
 ### Options
@@ -61,7 +61,6 @@ chat, shell command generation and execution, and natural language to SQL transl
 - `-h, --help` - Display help for command
 - `-V, --version` - Output the version number
 
-</details>
 
 ## Contributing
 
