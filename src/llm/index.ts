@@ -9,6 +9,15 @@ import { ChatCompletionRequestMessage } from 'openai';
 import path from 'path';
 import { AiValidator } from 'ai-validator';
 import { getPackageManagerByOs } from '../utils/helpers';
+import { HNSWLib } from 'langchain/vectorstores/hnswlib';
+import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
+import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
+import { TextLoader } from 'langchain/document_loaders/fs/text';
+import { RetrievalQAChain } from 'langchain/chains';
+import { inputAsk } from '../utils';
+import ora from 'ora';
+import { DirectoryLoader } from 'langchain/document_loaders/fs/directory';
+import { extensionsList } from '../utils/language-extensions';
 
 export class LLMCommand {
   protected llm: OpenAI;
@@ -509,16 +518,6 @@ Answer only valid, otherwise the answer will be rejected.
   }
 }
 
-function strTree(node: any, prefix = '') {
-  let result = `${prefix + node.name}\n`;
-  if (node.children) {
-    node.children.forEach((child: any) => {
-      result += strTree(child, prefix + '│  ');
-    });
-  }
-  return result;
-}
-
 export class LLMLintFile extends LLMCommand {
   constructor(config: IConfig) {
     super(config, 256, true, 0);
@@ -577,5 +576,93 @@ output: {files}
     handleLLMError: (error: Error) => Promise<void>;
   }) {
     return new LLMLintFile(params.config).lintCheckFile(params);
+  }
+}
+
+export class LLMCodeChat extends LLMCommand {
+  private vectorStore: any;
+  constructor(config: IConfig) {
+    super(config, 1024, true);
+  }
+
+  private async getOrCreateVectorStore(directory: string): Promise<void> {
+    const VECTOR_STORE_PATH = path.join('vector-store');
+    if (fs.existsSync(VECTOR_STORE_PATH)) {
+      this.vectorStore = await HNSWLib.load(
+        VECTOR_STORE_PATH,
+        new OpenAIEmbeddings({
+          openAIApiKey: this.config.OPENAI_API_KEY,
+        }),
+      );
+      return;
+    }
+
+    const loader = new DirectoryLoader(
+      directory,
+      extensionsList.reduce((acc, ext) => {
+        acc[ext] = (path) => new TextLoader(path);
+        return acc;
+      }, {}),
+    );
+
+    const rawDocs = await loader.load();
+    const textSplitter = new RecursiveCharacterTextSplitter();
+    const docs = await textSplitter.splitDocuments(rawDocs);
+    const vectorStore = await HNSWLib.fromDocuments(
+      docs,
+      new OpenAIEmbeddings({
+        openAIApiKey: this.config.OPENAI_API_KEY,
+      }),
+    );
+
+    await vectorStore.save(VECTOR_STORE_PATH);
+    this.vectorStore = vectorStore;
+  }
+
+  async chat(params: IChatParams): Promise<void> {
+    const prompt = params.prompt
+      ? params.prompt
+      : 'You are an AI assistant for working with code. You goal is to help developers with their questions about code.';
+    const promptTemplate = new PromptTemplate({
+      template: `${prompt} \nquestion: {question}`,
+      inputVariables: ['question'],
+    });
+
+    const chain = RetrievalQAChain.fromLLM(this.llm, this.vectorStore.asRetriever(1), {
+      returnSourceDocuments: true,
+    });
+
+    const question = await inputAsk();
+    const input = await promptTemplate.format({
+      question,
+    });
+    const res = await chain.call({ query: input }, [
+      {
+        handleLLMNewToken: params.handleLLMNewToken,
+        handleLLMStart: params.handleLLMStart,
+        handleLLMEnd: params.handleLLMEnd,
+        handleLLMError: params.handleLLMError,
+      },
+    ]);
+    process.stdout.write('\n' + res.sourceDocuments.map((doc) => `📄 ${doc.metadata.source}:`).join('\n') + '\n');
+
+    return this.chat(params);
+  }
+
+  static async chat({
+    config,
+    directory,
+    ...params
+  }: IChatParams & { config: IConfig; directory: string }): Promise<void> {
+    const llmCodeChat = new LLMCodeChat(config);
+    const spinner = ora('Loading vector store...').start();
+    try {
+      await llmCodeChat.getOrCreateVectorStore(directory);
+    } catch (error) {
+      spinner.fail('Failed to load vector store');
+      throw error;
+    }
+    spinner.succeed('Vector store loaded');
+    return llmCodeChat.chat(params);
   }
 }

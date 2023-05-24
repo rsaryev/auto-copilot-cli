@@ -4,9 +4,12 @@
     "module": "commonjs",
     "outDir": "./dist",
     "rootDir": "./src",
+    "baseUrl": "./src",
     "strict": true,
     "esModuleInterop": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "noImplicitAny": false,
+    "skipLibCheck": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "**/*.spec.ts"]

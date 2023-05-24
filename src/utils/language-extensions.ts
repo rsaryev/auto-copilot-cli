@@ -1,6 +1,7 @@
 import path from 'path';
 
 export const programmingLanguageExtensions = {
+  Text: ['.txt'],
   JavaScript: ['.js', '.mjs'],
   TypeScript: ['.ts', '.tsx'],
   CSS: ['.css', '.scss', '.less'],
@@ -42,7 +43,8 @@ export const excludePackagesFilesList = {
   Lua: ['rockspec'],
 };
 
-export const extensions = new Set<string>(Object.values(programmingLanguageExtensions).flat());
+export const extensionsList = Object.values(programmingLanguageExtensions).flat();
+export const extensions = new Set<string>(extensionsList);
 export const excludePackagesFiles = new Set<string>(Object.values(excludePackagesFilesList).flat());
 
 export const filterFilesByExtensions = (files: string[]): string[] => {
