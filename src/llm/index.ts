@@ -628,7 +628,7 @@ export class LLMCodeChat extends LLMCommand {
       inputVariables: ['question'],
     });
 
-    const chain = RetrievalQAChain.fromLLM(this.llm, this.vectorStore.asRetriever(1), {
+    const chain = RetrievalQAChain.fromLLM(this.llm, this.vectorStore.asRetriever(2), {
       returnSourceDocuments: true,
     });
 
