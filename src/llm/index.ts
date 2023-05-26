@@ -13,11 +13,12 @@ import { HNSWLib } from 'langchain/vectorstores/hnswlib';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { TextLoader } from 'langchain/document_loaders/fs/text';
-import { RetrievalQAChain } from 'langchain/chains';
+import { ConversationalRetrievalQAChain, RetrievalQAChain } from 'langchain/chains';
 import { inputAsk } from '../utils';
 import ora from 'ora';
 import { DirectoryLoader } from 'langchain/document_loaders/fs/directory';
 import { extensionsList } from '../utils/language-extensions';
+import { MemoryVectorStore } from 'langchain/vectorstores/memory';
 
 export class LLMCommand {
   protected llm: OpenAI;
@@ -581,11 +582,12 @@ output: {files}
 
 export class LLMCodeChat extends LLMCommand {
   private vectorStore: any;
+
   constructor(config: IConfig) {
     super(config, 1024, true);
   }
 
-  private async getOrCreateVectorStore(directory: string): Promise<void> {
+  private async getOrCreateVectorStore(directory: string): Promise<any> {
     const VECTOR_STORE_PATH = path.join('vector-store');
     if (fs.existsSync(VECTOR_STORE_PATH)) {
       this.vectorStore = await HNSWLib.load(
@@ -606,17 +608,14 @@ export class LLMCodeChat extends LLMCommand {
     );
 
     const rawDocs = await loader.load();
-    const textSplitter = new RecursiveCharacterTextSplitter();
+    const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 1000, chunkOverlap: 0 });
     const docs = await textSplitter.splitDocuments(rawDocs);
-    const vectorStore = await HNSWLib.fromDocuments(
+    this.vectorStore = await MemoryVectorStore.fromDocuments(
       docs,
       new OpenAIEmbeddings({
         openAIApiKey: this.config.OPENAI_API_KEY,
       }),
     );
-
-    await vectorStore.save(VECTOR_STORE_PATH);
-    this.vectorStore = vectorStore;
   }
 
   async chat(params: IChatParams): Promise<void> {
@@ -628,7 +627,7 @@ export class LLMCodeChat extends LLMCommand {
       inputVariables: ['question'],
     });
 
-    const chain = RetrievalQAChain.fromLLM(this.llm, this.vectorStore.asRetriever(2), {
+    const chain = ConversationalRetrievalQAChain.fromLLM(this.llm, this.vectorStore.asRetriever(2), {
       returnSourceDocuments: true,
     });
 
@@ -636,7 +635,7 @@ export class LLMCodeChat extends LLMCommand {
     const input = await promptTemplate.format({
       question,
     });
-    const res = await chain.call({ query: input }, [
+    const res = await chain.call({ question: input, chat_history: [] }, [
       {
         handleLLMNewToken: params.handleLLMNewToken,
         handleLLMStart: params.handleLLMStart,
