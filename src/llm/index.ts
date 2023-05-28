@@ -8,17 +8,16 @@ import { throwLLMParseError } from '../utils/error';
 import { ChatCompletionRequestMessage } from 'openai';
 import path from 'path';
 import { AiValidator } from 'ai-validator';
-import { getPackageManagerByOs } from '../utils/helpers';
-import { HNSWLib } from 'langchain/vectorstores/hnswlib';
+import { calculateCost, getPackageManagerByOs } from '../utils/helpers';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { TextLoader } from 'langchain/document_loaders/fs/text';
-import { ConversationalRetrievalQAChain, RetrievalQAChain } from 'langchain/chains';
-import { inputAsk } from '../utils';
+import { customAsk, inputAsk } from '../utils';
 import ora from 'ora';
 import { DirectoryLoader } from 'langchain/document_loaders/fs/directory';
 import { extensionsList } from '../utils/language-extensions';
 import { MemoryVectorStore } from 'langchain/vectorstores/memory';
+import * as process from 'process';
 
 export class LLMCommand {
   protected llm: OpenAI;
@@ -588,17 +587,6 @@ export class LLMCodeChat extends LLMCommand {
   }
 
   private async getOrCreateVectorStore(directory: string): Promise<any> {
-    const VECTOR_STORE_PATH = path.join('vector-store');
-    if (fs.existsSync(VECTOR_STORE_PATH)) {
-      this.vectorStore = await HNSWLib.load(
-        VECTOR_STORE_PATH,
-        new OpenAIEmbeddings({
-          openAIApiKey: this.config.OPENAI_API_KEY,
-        }),
-      );
-      return;
-    }
-
     const loader = new DirectoryLoader(
       directory,
       extensionsList.reduce((acc, ext) => {
@@ -610,42 +598,94 @@ export class LLMCodeChat extends LLMCommand {
     const rawDocs = await loader.load();
     const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 1000, chunkOverlap: 0 });
     const docs = await textSplitter.splitDocuments(rawDocs);
+    const cost = await calculateCost(
+      this.config.MODEL,
+      docs.map((doc) => doc.pageContent),
+    );
+
+    const input = await customAsk(
+      `🤖 Creating a vector store for ${rawDocs.length} documents will cost ~$${cost.toFixed(
+        5,
+      )}. Do you want to continue? (y/n) `,
+    );
+    if (!input) {
+      console.log('🤖 Bye!');
+      process.exit(0);
+    }
+    const spinner = ora('Loading vector store...').start();
     this.vectorStore = await MemoryVectorStore.fromDocuments(
       docs,
       new OpenAIEmbeddings({
         openAIApiKey: this.config.OPENAI_API_KEY,
       }),
     );
+    spinner.succeed(`Created vector store with ${rawDocs.length} documents`);
   }
 
   async chat(params: IChatParams): Promise<void> {
-    const prompt = params.prompt
-      ? params.prompt
-      : 'You are an AI assistant for working with code. You goal is to help developers with their questions about code.';
-    const promptTemplate = new PromptTemplate({
-      template: `${prompt} \nquestion: {question}`,
-      inputVariables: ['question'],
+    const messages: ChatCompletionRequestMessage[] = [];
+    messages.push({
+      role: 'system',
+      content:
+        params.prompt ||
+        `You are given from the vector store the most relevant code that you can use to solve the user request. 
+Try to answer user questions briefly and clearly.`,
     });
 
-    const chain = ConversationalRetrievalQAChain.fromLLM(this.llm, this.vectorStore.asRetriever(2), {
-      returnSourceDocuments: true,
-    });
+    while (true) {
+      const input = await inputAsk();
+      if (input === '') {
+        console.log('🤖 Chat history cleared');
+        messages.splice(1, messages.length);
+        continue;
+      }
 
-    const question = await inputAsk();
-    const input = await promptTemplate.format({
-      question,
-    });
-    const res = await chain.call({ question: input, chat_history: [] }, [
-      {
-        handleLLMNewToken: params.handleLLMNewToken,
-        handleLLMStart: params.handleLLMStart,
-        handleLLMEnd: params.handleLLMEnd,
-        handleLLMError: params.handleLLMError,
-      },
-    ]);
-    process.stdout.write('\n' + res.sourceDocuments.map((doc) => `📄 ${doc.metadata.source}:`).join('\n') + '\n');
+      if (input === 'exit') {
+        console.log('🤖 Bye!');
+        return params.handleLLMEnd();
+      }
 
-    return this.chat(params);
+      const relevantCode = await this.vectorStore.asRetriever(2).getRelevantDocuments(input);
+      if (relevantCode.length === 0) {
+        console.log("🤖 Sorry, I don't found any code for your question.");
+        return this.chat(params);
+      }
+
+      const llmChat = new OpenAIChat({
+        prefixMessages: messages.concat({
+          role: 'user',
+          content: relevantCode
+            .map((doc) => doc.pageContent)
+            .join('\n')
+            .replace(/\n/g, ' ')
+            .trim(),
+        }),
+        modelName: this.config.MODEL,
+        temperature: 0,
+        openAIApiKey: this.config.OPENAI_API_KEY,
+        streaming: true,
+      });
+
+      await llmChat.call(input, undefined, [
+        {
+          handleLLMNewToken: params.handleLLMNewToken,
+          handleLLMStart: params.handleLLMStart,
+          handleLLMEnd: params.handleLLMEnd,
+          handleLLMError: params.handleLLMError,
+        },
+      ]);
+      messages.push({
+        role: 'user',
+        content: input,
+      });
+
+      if (messages.length > 5) {
+        messages.splice(1, 1);
+      }
+      relevantCode.forEach((doc) => {
+        console.log(`📄 ${doc.metadata.source}:`);
+      });
+    }
   }
 
   static async chat({
@@ -654,14 +694,7 @@ export class LLMCodeChat extends LLMCommand {
     ...params
   }: IChatParams & { config: IConfig; directory: string }): Promise<void> {
     const llmCodeChat = new LLMCodeChat(config);
-    const spinner = ora('Loading vector store...').start();
-    try {
-      await llmCodeChat.getOrCreateVectorStore(directory);
-    } catch (error) {
-      spinner.fail('Failed to load vector store');
-      throw error;
-    }
-    spinner.succeed('Vector store loaded');
+    await llmCodeChat.getOrCreateVectorStore(directory);
     return llmCodeChat.chat(params);
   }
 }

@@ -93,6 +93,17 @@ export const inputTest = async (): Promise<string> => {
   return input;
 };
 
+export const customAsk = async (message: string): Promise<boolean> => {
+  const { ask } = await inquirer.prompt<{ ask: 'Yes' | 'No' }>([
+    {
+      type: 'list',
+      name: 'ask',
+      message,
+      choices: ['Yes', 'No'],
+    },
+  ]);
+  return ask === 'Yes';
+};
 export const inputAsk = async (): Promise<string> => {
   const { ask } = await inquirer.prompt<{ ask: string }>([
     {

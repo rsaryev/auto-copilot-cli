@@ -2,6 +2,10 @@ import ora from 'ora';
 import { exec } from 'child_process';
 import chalk from 'chalk';
 import { spawn } from 'child_process';
+import { Tiktoken } from '@dqbd/tiktoken/lite';
+import { load } from '@dqbd/tiktoken/load';
+import registry from '@dqbd/tiktoken/registry.json';
+import models from '@dqbd/tiktoken/model_to_encoding.json';
 
 export const exFunction = async <T>(fn: () => Promise<T>, message: string, successMessage: string): Promise<T> => {
   const spinner = ora(message).start();
@@ -62,4 +66,18 @@ export function getPackageManagerByOs() {
     win32: 'choco',
   };
   return packageManager[os] || 'apt-get';
+}
+
+export async function calculateCost(modelName: string, docs: string[]) {
+  const spinner = ora('Calculating cost').start();
+  try {
+    const { bpe_ranks, special_tokens, pat_str } = await load(registry[models[modelName]]);
+    const encoder = new Tiktoken(bpe_ranks, special_tokens, pat_str);
+    const tokenCount = encoder.encode(JSON.stringify(docs)).length;
+    const cost = (tokenCount / 1000) * 0.0005;
+    encoder.free();
+    return cost;
+  } finally {
+    spinner.stop();
+  }
 }
