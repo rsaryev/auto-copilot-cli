@@ -623,28 +623,18 @@ export class LLMCodeChat extends LLMCommand {
   }
 
   async chat(params: IChatParams): Promise<void> {
-    const messages: ChatCompletionRequestMessage[] = [];
-    messages.push({
-      role: 'system',
-      content:
-        params.prompt ||
-        `You are given from the vector store the most relevant code that you can use to solve the user request. 
+    const messages: ChatCompletionRequestMessage[] = [
+      {
+        role: 'system',
+        content:
+          params.prompt ||
+          `You are given from the vector store the most relevant code that you can use to solve the user request. 
 Try to answer user questions briefly and clearly.`,
-    });
+      },
+    ];
 
     while (true) {
       const input = await inputAsk();
-      if (input === '') {
-        console.log('🤖 Chat history cleared');
-        messages.splice(1, messages.length);
-        continue;
-      }
-
-      if (input === 'exit') {
-        console.log('🤖 Bye!');
-        return params.handleLLMEnd();
-      }
-
       const relevantCode = await this.vectorStore.asRetriever(2).getRelevantDocuments(input);
       if (relevantCode.length === 0) {
         console.log("🤖 Sorry, I don't found any code for your question.");
@@ -674,14 +664,6 @@ Try to answer user questions briefly and clearly.`,
           handleLLMError: params.handleLLMError,
         },
       ]);
-      messages.push({
-        role: 'user',
-        content: input,
-      });
-
-      if (messages.length > 5) {
-        messages.splice(1, 1);
-      }
       relevantCode.forEach((doc) => {
         console.log(`📄 ${doc.metadata.source}:`);
       });
