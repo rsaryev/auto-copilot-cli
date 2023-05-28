@@ -16,8 +16,8 @@ import { customAsk, inputAsk } from '../utils';
 import ora from 'ora';
 import { DirectoryLoader } from 'langchain/document_loaders/fs/directory';
 import { extensionsList } from '../utils/language-extensions';
-import { MemoryVectorStore } from 'langchain/vectorstores/memory';
 import * as process from 'process';
+import { HNSWLib } from 'langchain/vectorstores/hnswlib';
 
 export class LLMCommand {
   protected llm: OpenAI;
@@ -587,6 +587,20 @@ export class LLMCodeChat extends LLMCommand {
   }
 
   private async getOrCreateVectorStore(directory: string): Promise<any> {
+    const vectorStorePath = path.resolve(directory, 'vector-store');
+    if (fs.existsSync(vectorStorePath)) {
+      const store = await HNSWLib.load(
+        vectorStorePath,
+        new OpenAIEmbeddings({
+          openAIApiKey: this.config.OPENAI_API_KEY,
+        }),
+      );
+      const input = await customAsk(`Found existing vector store. Do you want to use it? (y/n) `);
+      if (input) {
+        this.vectorStore = store;
+        return;
+      }
+    }
     const loader = new DirectoryLoader(
       directory,
       extensionsList.reduce((acc, ext) => {
@@ -613,12 +627,13 @@ export class LLMCodeChat extends LLMCommand {
       process.exit(0);
     }
     const spinner = ora('Loading vector store...').start();
-    this.vectorStore = await MemoryVectorStore.fromDocuments(
+    this.vectorStore = await HNSWLib.fromDocuments(
       docs,
       new OpenAIEmbeddings({
         openAIApiKey: this.config.OPENAI_API_KEY,
       }),
     );
+    await this.vectorStore.save(vectorStorePath);
     spinner.succeed(`Created vector store with ${rawDocs.length} documents`);
   }
 
