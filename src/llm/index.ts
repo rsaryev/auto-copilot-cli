@@ -610,7 +610,7 @@ export class LLMCodeChat extends LLMCommand {
     );
 
     const rawDocs = await loader.load();
-    const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 1000, chunkOverlap: 0 });
+    const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 500, chunkOverlap: 50 });
     const docs = await textSplitter.splitDocuments(rawDocs);
     const cost = await calculateCost(
       this.config.MODEL,
@@ -650,7 +650,7 @@ Try to answer user questions briefly and clearly.`,
 
     while (true) {
       const input = await inputAsk();
-      const relevantCode = await this.vectorStore.asRetriever(2).getRelevantDocuments(input);
+      const relevantCode = await this.vectorStore.asRetriever(4).getRelevantDocuments(input);
       if (relevantCode.length === 0) {
         console.log("🤖 Sorry, I don't found any code for your question.");
         return this.chat(params);
