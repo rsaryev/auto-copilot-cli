@@ -7,7 +7,7 @@ const configPath = path.join(__dirname, '../../config.json');
 const defaultConfig: IConfig = {
   OPENAI_API_KEY: 'sk-xxx',
   TEMPERATURE: 0,
-  MODEL: 'gpt-3.5-turbo',
+  MODEL: 'gpt-3.5-turbo-0613',
   EDITOR: 'code',
   OPEN_AI_BASE_URL: 'https://api.openai.com/v1',
   INCLUDE_COMMIT_DESCRIPTION: 'no',
