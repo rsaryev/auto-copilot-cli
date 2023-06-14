@@ -39,7 +39,6 @@
 - `code-chat <path>` - AI chat with codebase [usage](https://github.com/rsaryev/auto-copilot-cli/blob/main/docs/code-chat.md)
     - Options:
         - `-p, --prompt <prompt>` - Prompt for AI
-- `lint-file` - Lint structure of a folder or a file and suggest a improvement [usage](https://github.com/rsaryev/auto-copilot-cli/blob/main/docs/lint-file.md) - Lint structure of a folder or a file and suggest a improvement
 - `code-review` - Perform code review [usage](https://github.com/rsaryev/auto-copilot-cli/blob/main/docs/code-review.md) - Perform code review
 - `test <file>` - Generate test [usage](https://github.com/rsaryev/auto-copilot-cli/blob/main/docs/test.md)
     - Options:
@@ -60,7 +59,6 @@
 - `pre-commit` - Analyze git diff and generate a commit message [usage](https://github.com/rsaryev/auto-copilot-cli/blob/main/docs/pre-commit.md)
     - Options:
         - `-y, --yes` - Skip confirmation
-- `analyze <exec>` - Experimental feature, analyze error message and suggest a solution [usage](https://github.com/rsaryev/auto-copilot-cli/blob/main/docs/analyze.md)
 - `config <key> <value>` - Set configuration [usage](https://github.com/rsaryev/auto-copilot-cli/blob/main/docs/config.md)
 - `get-config` - Print configuration
 

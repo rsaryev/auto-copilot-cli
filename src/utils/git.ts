@@ -48,3 +48,22 @@ export async function gitDiffFiles() {
 
   return raw.split('\n').filter(Boolean);
 }
+
+export async function gitFiles(): Promise<string[]> {
+  const exts = Array.from(extensions.values(), (ext) => `*${ext}`);
+  const excludeFiles = Array.from(excludePackagesFiles.values());
+  const gitIgnoreFiles = await getGitIgnoreFiles();
+
+  const raw = await git.raw([
+    'ls-files',
+    '--cached',
+    '--others',
+    '--exclude-standard',
+    '--',
+    ...exts,
+    ...excludeFiles.map((file) => `:(exclude)${file}`),
+    ...gitIgnoreFiles.map((file) => `:(exclude)${file}`),
+  ]);
+
+  return raw.split('\n').filter(Boolean);
+}

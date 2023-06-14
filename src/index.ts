@@ -6,7 +6,6 @@ import { TestCommand } from './commands/generate-tests';
 import { RefactorCommand } from './commands/refactor';
 import { ChatCommand } from './commands/chat';
 import { ShellCommand } from './commands/shell';
-import { AnalyzeCommand } from './commands/analyze';
 import { IConfig } from './types';
 import axios, { AxiosError } from 'axios';
 import { askOpenAIKey } from './utils';
@@ -16,7 +15,6 @@ import { checkNodeVersion } from './utils/helpers';
 import { checkUpdate } from './utils/update';
 import { SqlTranslatorCommand } from './commands/sql-translator';
 import { CodeReviewCommand } from './commands/code-review';
-import { LintFileCommand } from './commands/lint-file';
 import { checkGitExists } from './utils/git';
 import { CodeChatCommand } from './commands/code-chat-command';
 
@@ -111,7 +109,7 @@ const sqlTranslatorCommand: ICommand = {
 const chatCommand: ICommand = {
   name: 'chat',
   description: 'Chat with AI',
-  args: '<chat>',
+  args: '',
   options: [
     {
       name: '-p, --prompt <prompt>',
@@ -135,18 +133,6 @@ const shellCommand: ICommand = {
     const config: IConfig = getConfig();
     const shellCommand: ShellCommand = new ShellCommand(config);
     await shellCommand.execute(goal);
-  },
-};
-
-const analyzeCommand: ICommand = {
-  name: 'analyze',
-  description: 'Experimental feature, analyze error message and suggest a solution',
-  args: '<exec>',
-  options: [],
-  action: async (exec: string): Promise<void> => {
-    const config: IConfig = getConfig();
-    const analyzeCommand: AnalyzeCommand = new AnalyzeCommand(config);
-    await analyzeCommand.execute(exec);
   },
 };
 
@@ -207,19 +193,6 @@ const codeReviewCommand: ICommand = {
   },
 };
 
-const lintFileCommand: ICommand = {
-  name: 'lint-file',
-  description: 'Lint structure of a folder or a file and suggest a improvement',
-  args: '',
-  options: [],
-  action: async (): Promise<void> => {
-    await checkGitExists();
-    const config: IConfig = getConfig();
-    const lintFileCommand = new LintFileCommand(config);
-    await lintFileCommand.execute();
-  },
-};
-
 const codeChatCommand: ICommand = {
   name: 'code-chat',
   description: 'Chat with AI about code',
@@ -243,13 +216,11 @@ const commands: ICommand[] = [
   refactorCommand,
   chatCommand,
   shellCommand,
-  analyzeCommand,
   configCommand,
   getConfigCommand,
   preCommitCommand,
   sqlTranslatorCommand,
   codeReviewCommand,
-  lintFileCommand,
   codeChatCommand,
 ];
 
