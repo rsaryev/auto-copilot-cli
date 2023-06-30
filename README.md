@@ -31,7 +31,7 @@
    curl -s https://raw.githubusercontent.com/rsaryev/auto-copilot-cli/main/deployment/deploy.bash | bash
     ```
 2. Get an API key from [OpenAI](https://platform.openai.com/account/api-keys).
-3. Refer to the [CLI usage](https://github.com/rsaryev/auto-copilot-cli/blob/main/docs/usage.md) guide to learn how to use
+3. Refer to the [CLI usage](https://github.com/rsaryev/auto-copilot-cli/tree/main/docs) guide to learn how to use
    the tool.
 
 ### Commands
