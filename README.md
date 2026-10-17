@@ -1,3 +1,10 @@
+> **Looking for what I’m building next? Check out [Localix](https://github.com/rsaryev/localix).**
+>
+> I previously built auto-copilot-cli and talk-codebase. Now I’m building Localix: an open-source
+> workspace where you and AI agents share an editor, terminals, previews, and databases.
+>
+> Localix is in beta — feedback and contributions are welcome.
+
 [![npm](https://img.shields.io/npm/v/auto-copilot-cli)](https://www.npmjs.com/package/auto-copilot-cli)
 [![Node.js Package](https://github.com/rsaryev/auto-copilot-cli/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/rsaryev/auto-copilot-cli/actions/workflows/npm-publish.yml)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue)](https://github.com/transitive-bullshit/chatgpt-api/blob/main/license)
